@@ -2,65 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vehicle Compatibility Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f4f6f9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+  <title>FitCheck — Vehicle Compatibility</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Vehicle Compatibility Scanner</h1>
-      <p class="subtitle">Paste a product URL and enter your vehicle to check fitment</p>
+  <div class="app">
+    <header class="site-header">
+      <div class="brand" aria-hidden="true">
+        <span class="brand-mark">✓</span>
+      </div>
+      <h1>FitCheck</h1>
+      <p class="tagline">Paste a product link, enter your vehicle, get a fitment verdict.</p>
     </header>
 
-    <form id="scan-form" class="card">
-      <div class="form-group">
-        <label for="url">Product URL</label>
-        <input type="url" id="url" name="url" placeholder="https://example.com/product/..." required>
+    <main class="main">
+      <form id="scan-form" class="panel panel-form" novalidate>
+        <div class="field">
+          <label for="url">Product URL</label>
+          <input
+            type="url"
+            id="url"
+            name="url"
+            inputmode="url"
+            autocomplete="url"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="https://example.com/product/..."
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="vehicle">Your vehicle</label>
+          <textarea
+            id="vehicle"
+            name="vehicle"
+            rows="2"
+            autocomplete="off"
+            autocapitalize="words"
+            placeholder="e.g. 2014 Peterbilt 386"
+            required
+          ></textarea>
+          <p class="field-hint">Year, make, model — free text is fine.</p>
+        </div>
+
+        <div id="loading-status" class="loading-status hidden" aria-live="polite">
+          <div class="loading-bar" aria-hidden="true"><span class="loading-bar-fill"></span></div>
+          <p id="loading-label" class="loading-label">Starting…</p>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-submit">
+          <span class="btn-spinner hidden" id="spinner" aria-hidden="true"></span>
+          <span class="btn-text">Check compatibility</span>
+        </button>
+      </form>
+
+      <div id="error-panel" class="panel panel-error hidden" role="alert">
+        <div class="panel-icon panel-icon-error" aria-hidden="true">!</div>
+        <div class="panel-body">
+          <h2>Something went wrong</h2>
+          <p id="error-message"></p>
+          <p id="error-code" class="error-code"></p>
+          <button type="button" class="btn-text-action" id="error-retry">Try again</button>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="vehicle">Your Vehicle</label>
-        <textarea id="vehicle" name="vehicle" rows="2" placeholder="e.g. 2018 Honda Civic 1.5T" required></textarea>
-      </div>
+      <article id="results" class="panel panel-results hidden" aria-live="polite">
+        <header class="verdict-header" id="verdict-header">
+          <div id="verdict-icon" class="verdict-icon" aria-hidden="true"></div>
+          <div class="verdict-copy">
+            <p class="verdict-label" id="verdict-label">Result</p>
+            <h2 id="compatibility-badge" class="verdict-title"></h2>
+            <p id="summary" class="verdict-summary"></p>
+          </div>
+        </header>
 
-      <button type="submit" id="submit-btn" class="btn-primary">
-        <span class="btn-text">Check Compatibility</span>
-        <span class="spinner hidden" id="spinner"></span>
-      </button>
-    </form>
+        <section class="result-block">
+          <h3>Product</h3>
+          <dl id="product-details" class="detail-list"></dl>
+        </section>
 
-    <div id="error-panel" class="card error-panel hidden" role="alert">
-      <h2>Error</h2>
-      <p id="error-message"></p>
-      <p id="error-code" class="error-code"></p>
-    </div>
+        <section class="result-block hidden" id="matched-section">
+          <h3>Matched vehicles</h3>
+          <ul id="matched-vehicles" class="bullet-list"></ul>
+        </section>
 
-    <div id="results" class="card results hidden">
-      <h2>Results</h2>
-      <div id="compatibility-badge" class="badge"></div>
-      <p id="summary" class="summary"></p>
+        <section class="result-block hidden" id="notes-section">
+          <h3>Notes</h3>
+          <ul id="notes" class="bullet-list"></ul>
+        </section>
 
-      <section class="result-section">
-        <h3>Product</h3>
-        <dl id="product-details"></dl>
-      </section>
+        <details class="result-block timings-block">
+          <summary>Performance timings</summary>
+          <dl id="timings" class="detail-list detail-list-compact"></dl>
+        </details>
+      </article>
+    </main>
 
-      <section class="result-section" id="matched-section">
-        <h3>Matched Vehicles</h3>
-        <ul id="matched-vehicles"></ul>
-      </section>
-
-      <section class="result-section" id="notes-section">
-        <h3>Notes</h3>
-        <ul id="notes"></ul>
-      </section>
-
-      <section class="result-section timings">
-        <h3>Timings</h3>
-        <dl id="timings"></dl>
-      </section>
-    </div>
+    <footer class="site-footer">
+      <p>Server-side page fetch · LLM-powered fitment analysis</p>
+    </footer>
   </div>
 
   <script src="/static/app.js"></script>

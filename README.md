@@ -1,6 +1,6 @@
-# Product Vehicle Compatibility Scanner
+# FitCheck — Vehicle Compatibility Scanner
 
-A web application that scans e-commerce product pages and determines vehicle compatibility using Playwright page rendering and a two-stage LangChain LLM pipeline.
+A web application that scans e-commerce product pages and determines vehicle compatibility using Playwright page rendering and a two-stage LangChain LLM pipeline (Anthropic by default, OpenAI fallback).
 
 ## Features
 
@@ -60,18 +60,174 @@ With the server running:
 python tests/scripts/smoke_test.py
 ```
 
-## Docker
+## Docker (local)
 
 ```bash
 cp .env.example .env
 # Edit .env with your API keys
 
-docker compose up --build
+docker compose up --build -d
 ```
 
 The app will be available at http://localhost:8000.
 
 > **Note:** Docker Compose sets `shm_size: 1gb` for Playwright stability.
+
+## Deploy to a VPS
+
+This app runs well on any small Linux VPS (1–2 GB RAM minimum recommended for Playwright). Docker is the simplest way to deploy.
+
+### 1. Provision a server
+
+Use any provider (DigitalOcean, Linode, Hetzner, AWS Lightsail, etc.):
+
+- **OS:** Ubuntu 22.04 or 24.04 LTS
+- **RAM:** 2 GB+ (Playwright + Chromium need headroom)
+- **Ports:** open `22` (SSH) and `80`/`443` (HTTP/HTTPS)
+
+### 2. Install Docker on the VPS
+
+SSH into the server and run:
+
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+# Log out and back in so the docker group applies
+```
+
+### 3. Clone and configure
+
+```bash
+git clone https://github.com/YOUR_USER/product-scanner.git
+cd product-scanner
+cp .env.example .env
+nano .env   # set ANTHROPIC_API_KEY and/or OPENAI_API_KEY
+```
+
+Recommended production `.env` values:
+
+```env
+LLM_PROVIDER=auto
+ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...
+RATE_LIMIT_PER_MINUTE=20
+CORS_ORIGINS=https://yourdomain.com
+PLAYWRIGHT_HEADLESS=true
+```
+
+### 4. Start the app
+
+```bash
+docker compose up --build -d
+docker compose ps
+curl http://localhost:8000/api/health
+```
+
+The app listens on port **8000** inside the server. Do not expose 8000 publicly long-term — put a reverse proxy in front (next step).
+
+### 5. Reverse proxy with HTTPS (Caddy — easiest)
+
+Install [Caddy](https://caddyserver.com/docs/install) on the VPS:
+
+```bash
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+sudo apt update && sudo apt install caddy
+```
+
+Create `/etc/caddy/Caddyfile`:
+
+```caddyfile
+yourdomain.com {
+    reverse_proxy localhost:8000
+}
+```
+
+```bash
+sudo systemctl reload caddy
+```
+
+Caddy obtains and renews Let's Encrypt certificates automatically. Your app is now at **https://yourdomain.com**.
+
+#### Alternative: Nginx + Certbot
+
+```bash
+sudo apt install nginx certbot python3-certbot-nginx
+```
+
+Create `/etc/nginx/sites-available/product-scanner`:
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;   # analyze requests can take 30–60s
+        proxy_connect_timeout 120s;
+    }
+}
+```
+
+```bash
+sudo ln -s /etc/nginx/sites-available/product-scanner /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot --nginx -d yourdomain.com
+```
+
+### 6. Firewall
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'   # or: sudo ufw allow 80,443/tcp
+sudo ufw enable
+```
+
+Block direct access to port 8000 from the internet — only the reverse proxy should reach it.
+
+### 7. Keep it running (auto-restart)
+
+`docker-compose.yml` already sets `restart: unless-stopped`. After a reboot:
+
+```bash
+cd product-scanner
+docker compose up -d
+```
+
+Optional: enable Docker at boot:
+
+```bash
+sudo systemctl enable docker
+```
+
+### 8. Updates
+
+```bash
+cd product-scanner
+git pull
+docker compose up --build -d
+```
+
+### 9. Access from your phone
+
+Once HTTPS is configured, open **https://yourdomain.com** on any device. The UI is mobile-optimized — paste a product URL and enter your vehicle as free text.
+
+### VPS checklist
+
+| Step | Command / check |
+|------|-----------------|
+| Health | `curl https://yourdomain.com/api/health` |
+| Logs | `docker compose logs -f` |
+| Disk | Image ~1.2 GB; ensure 10+ GB free |
+| API keys | Never commit `.env`; keys stay server-side only |
+| Rate limit | Tune `RATE_LIMIT_PER_MINUTE` for your usage |
 
 ## API
 
