@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     fetch_timeout_ms: int = 30_000
     max_extract_chars: int = 12_000
 
-    llm_provider: Literal["openai", "anthropic"] = "openai"
+    llm_provider: Literal["auto", "openai", "anthropic"] = "auto"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
     anthropic_api_key: str = ""

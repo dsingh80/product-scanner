@@ -1,10 +1,11 @@
 """Unit tests for LLM pipeline (mocked)."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from app.config import Settings
+from app.errors import AppError, ErrorCode
 from app.services.llm.pipeline import LLMPipeline
 
 
@@ -29,12 +30,11 @@ class TestLLMPipeline:
             "fitment_data": [],
             "has_fitment": False,
         })
-
         mock_analyze_chain = MagicMock()
         mock_analyze_chain.ainvoke = AsyncMock()
 
-        pipeline._extract_chain = mock_extract_chain
-        pipeline._analyze_chain = mock_analyze_chain
+        pipeline._chains[("openai", "extract")] = mock_extract_chain
+        pipeline._chains[("openai", "analyze")] = mock_analyze_chain
 
         product, compatibility, usage, timings = await pipeline.run(
             "Some product content", vehicle, "https://example.com"
@@ -70,8 +70,8 @@ class TestLLMPipeline:
             "fitment_found": True,
         })
 
-        pipeline._extract_chain = mock_extract_chain
-        pipeline._analyze_chain = mock_analyze_chain
+        pipeline._chains[("openai", "extract")] = mock_extract_chain
+        pipeline._chains[("openai", "analyze")] = mock_analyze_chain
 
         product, compatibility, usage, timings = await pipeline.run(
             "Fitment: 2020 Toyota Camry SE", vehicle, "https://example.com"
@@ -85,12 +85,49 @@ class TestLLMPipeline:
         assert "llm_analyze_ms" in timings
 
     @pytest.mark.asyncio
+    async def test_fallback_to_openai_on_anthropic_quota(self, vehicle):
+        settings = Settings(
+            llm_provider="auto",
+            anthropic_api_key="ant-key",
+            openai_api_key="oai-key",
+        )
+        pipeline = LLMPipeline(settings)
+
+        mock_anthropic_extract = MagicMock()
+        mock_anthropic_extract.ainvoke = AsyncMock(
+            side_effect=RuntimeError("Error code: 429 - insufficient_quota")
+        )
+        mock_openai_extract = MagicMock()
+        mock_openai_extract.ainvoke = AsyncMock(return_value={
+            "name": "Brake Pads",
+            "brand": "StopTech",
+            "sku": "ST-1234",
+            "description": "Ceramic pads",
+            "category": "Brakes",
+            "fitment_data": [],
+            "has_fitment": False,
+        })
+
+        pipeline._chains[("anthropic", "extract")] = mock_anthropic_extract
+        pipeline._chains[("openai", "extract")] = mock_openai_extract
+
+        product, compatibility, usage, timings = await pipeline.run(
+            "Some product content", vehicle, "https://example.com"
+        )
+
+        assert product.name == "Brake Pads"
+        mock_anthropic_extract.ainvoke.assert_awaited_once()
+        mock_openai_extract.ainvoke.assert_awaited_once()
+
+    @pytest.mark.asyncio
     async def test_llm_not_configured(self):
-        settings = Settings(openai_api_key="", llm_provider="openai")
+        settings = Settings(
+            openai_api_key="",
+            anthropic_api_key="",
+            llm_provider="auto",
+        )
         pipeline = LLMPipeline(settings)
         vehicle = "2020 Toyota Camry"
-
-        from app.errors import AppError, ErrorCode
 
         with pytest.raises(AppError) as exc:
             await pipeline.run("content", vehicle, "https://example.com")

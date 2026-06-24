@@ -60,6 +60,9 @@ def create_app() -> FastAPI:
 
     if FRONTEND_DIR.exists():
         app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+        demo_dir = FRONTEND_DIR / "demo"
+        if demo_dir.exists():
+            app.mount("/demo", StaticFiles(directory=demo_dir, html=True), name="demo")
 
         @app.get("/")
         async def index():

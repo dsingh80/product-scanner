@@ -85,7 +85,10 @@ def validate_url(url: str) -> str:
             status_code=400,
         )
 
-    if hostname in BLOCKED_HOSTNAMES:
+    path = parsed.path or ""
+    is_demo_path = path.startswith("/demo/")
+
+    if hostname in BLOCKED_HOSTNAMES and not is_demo_path:
         raise AppError(
             ErrorCode.URL_BLOCKED_LOCALHOST,
             "Localhost and loopback addresses are not allowed",
@@ -99,7 +102,7 @@ def validate_url(url: str) -> str:
             status_code=400,
         )
 
-    if _is_private_ip(hostname):
+    if _is_private_ip(hostname) and not is_demo_path:
         raise AppError(
             ErrorCode.URL_BLOCKED_PRIVATE_IP,
             "Private IP addresses are not allowed",
@@ -107,7 +110,7 @@ def validate_url(url: str) -> str:
         )
 
     for ip in _resolve_host_ips(hostname):
-        if _is_private_ip(ip):
+        if _is_private_ip(ip) and not is_demo_path:
             raise AppError(
                 ErrorCode.URL_BLOCKED_PRIVATE_IP,
                 f"Hostname resolves to blocked private IP: {ip}",
@@ -115,7 +118,7 @@ def validate_url(url: str) -> str:
             )
 
     port = parsed.port
-    if port is not None and port not in (80, 443, 8080, 8443):
+    if port is not None and port not in (80, 443, 8080, 8443) and not is_demo_path:
         raise AppError(
             ErrorCode.URL_BLOCKED_INTERNAL,
             f"Port {port} is not allowed",

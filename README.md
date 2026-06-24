@@ -121,7 +121,7 @@ Response includes `product`, `compatibility`, `usage` (per-stage token counts), 
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `LLM_PROVIDER` | `openai` | `openai` or `anthropic` |
+| `LLM_PROVIDER` | `auto` | `auto` (Anthropic → OpenAI fallback), `openai`, or `anthropic` |
 | `OPENAI_API_KEY` | — | OpenAI API key |
 | `ANTHROPIC_API_KEY` | — | Anthropic API key |
 | `RATE_LIMIT_PER_MINUTE` | `10` | API rate limit per IP |
