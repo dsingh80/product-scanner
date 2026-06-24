@@ -1,0 +1,10 @@
+# Smoke test configuration
+base_url: http://localhost:8000
+health_endpoint: /api/health
+timeout_seconds: 30
+
+# Optional live analyze test (requires LLM API key and network)
+live_analyze:
+  enabled: false
+  url: https://example.com/product
+  vehicle: "2020 Toyota Camry"

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Compatibility Scanner</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Vehicle Compatibility Scanner</h1>
+      <p class="subtitle">Paste a product URL and enter your vehicle to check fitment</p>
+    </header>
+
+    <form id="scan-form" class="card">
+      <div class="form-group">
+        <label for="url">Product URL</label>
+        <input type="url" id="url" name="url" placeholder="https://example.com/product/..." required>
+      </div>
+
+      <div class="form-group">
+        <label for="vehicle">Your Vehicle</label>
+        <textarea id="vehicle" name="vehicle" rows="2" placeholder="e.g. 2018 Honda Civic 1.5T" required></textarea>
+      </div>
+
+      <button type="submit" id="submit-btn" class="btn-primary">
+        <span class="btn-text">Check Compatibility</span>
+        <span class="spinner hidden" id="spinner"></span>
+      </button>
+    </form>
+
+    <div id="error-panel" class="card error-panel hidden" role="alert">
+      <h2>Error</h2>
+      <p id="error-message"></p>
+      <p id="error-code" class="error-code"></p>
+    </div>
+
+    <div id="results" class="card results hidden">
+      <h2>Results</h2>
+      <div id="compatibility-badge" class="badge"></div>
+      <p id="summary" class="summary"></p>
+
+      <section class="result-section">
+        <h3>Product</h3>
+        <dl id="product-details"></dl>
+      </section>
+
+      <section class="result-section" id="matched-section">
+        <h3>Matched Vehicles</h3>
+        <ul id="matched-vehicles"></ul>
+      </section>
+
+      <section class="result-section" id="notes-section">
+        <h3>Notes</h3>
+        <ul id="notes"></ul>
+      </section>
+
+      <section class="result-section timings">
+        <h3>Timings</h3>
+        <dl id="timings"></dl>
+      </section>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
