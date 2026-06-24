@@ -2,7 +2,8 @@
 
 from pathlib import Path
 
-from app.services.extractor import extract_content
+from app.models import PageContentInput
+from app.services.extractor import extract_content, extract_from_client_content
 
 FIXTURES = Path(__file__).resolve().parent.parent / "fixtures" / "pages"
 
@@ -41,3 +42,22 @@ class TestExtractor:
         result = extract_content(html, "https://example.com/product")
         assert len(result["combined_text"]) <= 500
         get_settings.cache_clear()
+
+    def test_extract_from_client_text(self):
+        pc = PageContentInput(
+            url="https://www.ebay.com/itm/123",
+            text="Fits 2014 Peterbilt 386. Item specifics: Cummins ISX.",
+            title="EBP Sensor",
+            source="paste",
+        )
+        result = extract_from_client_content(pc, pc.url)
+        assert "Peterbilt" in result["combined_text"]
+        assert result["has_fitment_hints"] is True
+        assert result["meta"]["title"] == "EBP Sensor"
+
+    def test_extract_from_client_html(self):
+        html = (FIXTURES / "product_with_fitment.html").read_text(encoding="utf-8")
+        pc = PageContentInput(html=html, url="https://example.com/product", source="bookmarklet")
+        result = extract_from_client_content(pc, pc.url)
+        assert result["json_ld"]
+        assert result["has_fitment_hints"] is True

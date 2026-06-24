@@ -53,6 +53,52 @@ class TestAnalyzeEndpoint:
         response = client.post("/api/analyze", json={"url": "not-valid"})
         assert response.status_code == 422
 
+    def test_analyze_client_content_skips_fetch(self, client, mock_llm_pipeline):
+        with patch("app.services.analyzer.fetch_page", new_callable=AsyncMock) as mock_fetch:
+            payload = {
+                "vehicle": "2014 Peterbilt 386",
+                "page_content": {
+                    "url": "https://www.ebay.com/itm/1234567890",
+                    "text": "Fits 2014 Peterbilt 386. EBP sensor for Cummins ISX.",
+                    "source": "paste",
+                },
+            }
+            response = client.post("/api/analyze", json=payload)
+            assert response.status_code == 200
+            data = response.json()
+            assert data["source"] == "client_content"
+            assert data["timings"]["fetch_ms"] == 0
+            mock_fetch.assert_not_called()
+            mock_llm_pipeline.run.assert_called_once()
+
+    def test_analyze_fetch_failure_skips_llm(self, client):
+        from app.errors import AppError, ErrorCode
+
+        fetch_error = AppError(
+            ErrorCode.FETCH_BLOCKED,
+            "Blocked by bot protection",
+            status_code=502,
+            details={
+                "status_code": 403,
+                "fetch": {"request": {"url": "https://www.ebay.com/itm/1"}, "response": {"status": 403}},
+            },
+        )
+        with patch("app.services.analyzer.fetch_page", new_callable=AsyncMock) as mock_fetch:
+            mock_fetch.side_effect = fetch_error
+            with patch("app.services.analyzer.create_pipeline") as mock_create:
+                response = client.post(
+                    "/api/analyze",
+                    json={
+                        "url": "https://www.ebay.com/itm/1234567890",
+                        "vehicle": "2014 Peterbilt 386",
+                    },
+                )
+                assert response.status_code == 502
+                data = response.json()
+                assert data["error"]["code"] == "FETCH_BLOCKED"
+                assert "fetch" in data["error"]["details"]
+                mock_create.assert_not_called()
+
 
 class TestCORS:
     def test_cors_headers_on_options(self, client):

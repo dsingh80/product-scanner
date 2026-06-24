@@ -16,24 +16,61 @@
         <span class="brand-mark">✓</span>
       </div>
       <h1>FitCheck</h1>
-      <p class="tagline">Paste a product link, enter your vehicle, get a fitment verdict.</p>
+      <p class="tagline">Check if a product fits your vehicle — from a URL or from the page in your browser.</p>
     </header>
 
     <main class="main">
+      <div class="mode-tabs" role="tablist">
+        <button type="button" class="mode-tab active" data-mode="url" role="tab" aria-selected="true">Product URL</button>
+        <button type="button" class="mode-tab" data-mode="paste" role="tab" aria-selected="false">Paste page</button>
+        <button type="button" class="mode-tab" data-mode="bookmarklet" role="tab" aria-selected="false">Bookmarklet</button>
+      </div>
+
       <form id="scan-form" class="panel panel-form" novalidate>
-        <div class="field">
-          <label for="url">Product URL</label>
-          <input
-            type="url"
-            id="url"
-            name="url"
-            inputmode="url"
-            autocomplete="url"
-            autocapitalize="off"
-            spellcheck="false"
-            placeholder="https://example.com/product/..."
-            required
-          >
+        <div id="panel-url" class="mode-panel">
+          <div class="field">
+            <label for="url">Product URL</label>
+            <input
+              type="url"
+              id="url"
+              name="url"
+              inputmode="url"
+              autocomplete="url"
+              autocapitalize="off"
+              spellcheck="false"
+              placeholder="https://example.com/product/..."
+            >
+            <p class="field-hint">Works on many sites. eBay/Amazon often block server fetches — use Bookmarklet instead.</p>
+          </div>
+        </div>
+
+        <div id="panel-paste" class="mode-panel hidden">
+          <div class="field">
+            <label for="paste-url">Page URL <span class="optional">(optional)</span></label>
+            <input type="url" id="paste-url" placeholder="https://www.ebay.com/itm/..." inputmode="url">
+          </div>
+          <div class="field">
+            <label for="paste-content">Page text or HTML</label>
+            <textarea id="paste-content" rows="6" placeholder="Paste product title, description, fitment, item specifics…"></textarea>
+            <p class="field-hint">Copy from the product page in your browser (Ctrl+A on the listing, then paste here).</p>
+          </div>
+        </div>
+
+        <div id="panel-bookmarklet" class="mode-panel hidden">
+          <div class="bookmarklet-help">
+            <p><strong>For eBay, Amazon, and other blocked sites.</strong> This reads the page you already have open in <em>your</em> browser — no server fetch.</p>
+            <ol>
+              <li>Drag the button below to your bookmarks bar.</li>
+              <li>Open the product listing on eBay (or any site).</li>
+              <li>Click the bookmark — FitCheck opens with the page captured.</li>
+              <li>Enter your vehicle and check compatibility.</li>
+            </ol>
+            <p class="field-hint">On mobile: create a bookmark, edit its URL, and paste the code from “Copy bookmarklet” below.</p>
+            <div class="bookmarklet-actions">
+              <a id="bookmarklet-link" class="btn-bookmarklet" href="#">Capture to FitCheck</a>
+              <button type="button" class="btn-text-action" id="copy-bookmarklet">Copy bookmarklet code</button>
+            </div>
+          </div>
         </div>
 
         <div class="field">
@@ -47,7 +84,10 @@
             placeholder="e.g. 2014 Peterbilt 386"
             required
           ></textarea>
-          <p class="field-hint">Year, make, model — free text is fine.</p>
+        </div>
+
+        <div id="import-banner" class="import-banner hidden" role="status">
+          Page captured from your browser. Enter your vehicle and check compatibility.
         </div>
 
         <div id="loading-status" class="loading-status hidden" aria-live="polite">
@@ -67,6 +107,11 @@
           <h2>Something went wrong</h2>
           <p id="error-message"></p>
           <p id="error-code" class="error-code"></p>
+          <ul id="error-suggestions" class="error-suggestions hidden"></ul>
+          <details id="error-debug" class="error-debug hidden">
+            <summary>Raw fetch trace</summary>
+            <pre id="error-debug-body"></pre>
+          </details>
           <button type="button" class="btn-text-action" id="error-retry">Try again</button>
         </div>
       </div>
@@ -104,7 +149,7 @@
     </main>
 
     <footer class="site-footer">
-      <p>Server-side page fetch · LLM-powered fitment analysis</p>
+      <p>Client capture or server fetch · LLM fitment analysis</p>
     </footer>
   </div>
 

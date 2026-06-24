@@ -10,6 +10,7 @@ A web application that scans e-commerce product pages and determines vehicle com
 - **Rule-based pre-filter** — reduces token usage before LLM calls
 - **Two-stage LLM pipeline** — extract product/fitment data, then analyze compatibility (early exit when no fitment found)
 - **Mobile-first frontend** — paste URL + vehicle form with loading states and results
+- **Browser capture mode** — bookmarklet or paste page text for eBay/Amazon when server fetch is blocked
 - **Rate limiting** — 10 requests/minute per IP (configurable)
 - **Docker support** — single image with Playwright Chromium
 
@@ -244,6 +245,24 @@ Returns Playwright and LLM configuration status.
 }
 ```
 
+**Client-captured content** (bypasses server fetch — use for eBay, Amazon, etc.):
+
+```json
+{
+  "vehicle": "2014 Peterbilt 386",
+  "page_content": {
+    "url": "https://www.ebay.com/itm/1234567890",
+    "text": "…paste or bookmarklet-captured page text…",
+    "html": "…optional full HTML…",
+    "title": "Listing title",
+    "json_ld": [],
+    "source": "bookmarklet"
+  }
+}
+```
+
+When `DEBUG=true` in `.env`, fetch errors include a `fetch` object with the raw request (URL, headers) and response (status, headers, body preview, bot-protection detection). **No LLM calls are made if the page fetch fails.**
+
 Response includes `product`, `compatibility`, `usage` (per-stage token counts), and `timings`:
 
 ```json
@@ -277,6 +296,7 @@ Response includes `product`, `compatibility`, `usage` (per-stage token counts), 
 
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `DEBUG` | `false` | Enable verbose fetch diagnostics on all analyze requests |
 | `LLM_PROVIDER` | `auto` | `auto` (Anthropic → OpenAI fallback), `openai`, or `anthropic` |
 | `OPENAI_API_KEY` | — | OpenAI API key |
 | `ANTHROPIC_API_KEY` | — | Anthropic API key |
@@ -284,6 +304,53 @@ Response includes `product`, `compatibility`, `usage` (per-stage token counts), 
 | `FETCH_TIMEOUT_MS` | `30000` | Playwright page load timeout |
 | `MAX_EXTRACT_CHARS` | `12000` | Max extracted text length |
 | `CORS_ORIGINS` | `*` | Comma-separated allowed origins |
+
+### eBay / Amazon — use the bookmarklet
+
+Server-side fetching often fails on eBay and Amazon (403 / bot checks), even with residential proxies. FitCheck can analyze content **captured in your own browser** instead:
+
+1. Open FitCheck → **Bookmarklet** tab
+2. Drag **Capture to FitCheck** to your bookmarks bar (mobile: copy the code into a bookmark URL)
+3. Open the product listing on eBay or Amazon
+4. Click the bookmark — FitCheck opens with the page text captured
+5. Enter your vehicle and run the check
+
+Alternatively, use **Paste page** mode: copy text from the listing and paste it in.
+
+The API accepts `page_content` instead of `url`. Response `source` is `"client_content"` and `fetch_ms` is `0`.
+
+### Debugging fetch failures (403 / bot blocks)
+
+Many marketplaces (eBay, Amazon, etc.) return **HTTP 403** or a **200 OK challenge page** to headless browsers running on VPS/datacenter IPs.
+
+Enable diagnostics by setting `DEBUG=true` in `.env`.
+
+Error responses then include:
+
+- `bot_protection` — detected vendor (Cloudflare, Incapsula, eBay, etc.)
+- `suggestions` — actionable hints (including bookmarklet guidance for eBay/Amazon)
+- `fetch` (when `DEBUG=true`) — structured `request` + `response` trace: URL, headers, status, body preview, visible text preview, bot protection
+
+Example error shape:
+
+```json
+{
+  "error": {
+    "code": "FETCH_BLOCKED",
+    "message": "eBay bot check blocked automated access (HTTP 403)",
+    "details": {
+      "status_code": 403,
+      "final_url": "https://www.ebay.com/itm/...",
+      "bot_protection": { "detected": true, "vendor": "ebay", "vendor_name": "eBay bot check" },
+      "suggestions": ["..."],
+      "fetch": {
+        "request": { "method": "GET", "url": "..." },
+        "response": { "status": 403, "body_preview": "...", "visible_text_preview": "..." }
+      }
+    }
+  }
+}
+```
 
 ## Project Structure
 

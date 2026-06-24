@@ -360,6 +360,67 @@ input:invalid:not(:placeholder-shown):not(:focus) {
   color: var(--text-muted) !important;
 }
 
+.error-suggestions {
+  margin: 0.75rem 0 0;
+  padding-left: 1.15rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.error-suggestions li + li {
+  margin-top: 0.35rem;
+}
+
+.error-debug {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.error-debug summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.error-debug pre {
+  margin: 0.5rem 0 0;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.4;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.field-checkbox {
+  margin-bottom: 0.75rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  min-height: var(--touch);
+  padding: 0.25rem 0;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
 .btn-text-action {
   margin-top: 0.75rem;
   padding: 0;
@@ -550,6 +611,99 @@ input:invalid:not(:placeholder-shown):not(:focus) {
 
 .hidden {
   display: none !important;
+}
+
+/* Input mode tabs */
+.mode-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  padding: 0.25rem;
+  background: var(--neutral-bg);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+}
+
+.mode-tab {
+  flex: 1;
+  min-height: 40px;
+  padding: 0.5rem 0.65rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mode-tab.active {
+  background: var(--bg-elevated);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.mode-panel.hidden {
+  display: none !important;
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.875em;
+}
+
+.bookmarklet-help {
+  margin-bottom: 0.5rem;
+}
+
+.bookmarklet-help ol {
+  margin: 0.75rem 0;
+  padding-left: 1.25rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.bookmarklet-help li + li {
+  margin-top: 0.35rem;
+}
+
+.bookmarklet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.btn-bookmarklet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch);
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: grab;
+}
+
+.btn-bookmarklet:active {
+  cursor: grabbing;
+  background: var(--accent-pressed);
+}
+
+.import-banner {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent-subtle);
+  border: 1px solid var(--border-focus);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
 }
 
 /* Wider screens */

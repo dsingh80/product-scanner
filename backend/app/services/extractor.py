@@ -7,6 +7,8 @@ from typing import Any
 from bs4 import BeautifulSoup
 
 from app.config import get_settings
+from app.models import PageContentInput
+from app.services.site_handlers import enrich_site_extraction
 
 FITMENT_KEYWORDS = re.compile(
     r"\b(fits?|compatible|fitment|vehicle|year|make|model|trim|engine|application)\b",
@@ -146,4 +148,58 @@ def extract_content(html: str, source_url: str) -> dict[str, Any]:
             re.I,
         )
     )
-    return structured
+    return enrich_site_extraction(soup, source_url, structured)
+
+
+def extract_from_client_content(page_content: PageContentInput, source_url: str) -> dict[str, Any]:
+    """Build extraction bundle from browser-captured HTML/text (no server fetch)."""
+    settings = get_settings()
+    html = (page_content.html or "").strip()
+    text = (page_content.text or "").strip()
+
+    if html:
+        return extract_content(html, source_url)
+
+    soup = BeautifulSoup("<html><head></head><body></body></html>", "lxml")
+    if page_content.title:
+        title_el = soup.find("title")
+        if title_el is None:
+            title_el = soup.new_tag("title")
+            soup.head.append(title_el)
+        title_el.string = page_content.title
+
+    json_ld = page_content.json_ld or []
+    fitment_blocks: list[str] = []
+    if text:
+        fitment_blocks.append(text[: settings.max_extract_chars])
+
+    structured: dict[str, Any] = {
+        "source_url": source_url,
+        "json_ld": json_ld,
+        "next_data": None,
+        "og_tags": {},
+        "meta": {"title": page_content.title} if page_content.title else {},
+        "fitment_blocks": fitment_blocks,
+        "body_text": text,
+    }
+
+    parts: list[str] = []
+    if page_content.title:
+        parts.append(f"TITLE: {page_content.title}")
+    if page_content.url:
+        parts.append(f"SOURCE_URL: {page_content.url}")
+    if json_ld:
+        parts.append("JSON-LD: " + json.dumps(json_ld, ensure_ascii=False))
+    if text:
+        parts.append("BODY: " + text)
+
+    combined = "\n\n".join(parts)
+    structured["combined_text"] = _cap_text(combined, settings.max_extract_chars)
+    structured["has_fitment_hints"] = bool(
+        re.search(
+            r"\b(fits?\s+\d{4}|compatible with|fitment:|vehicle fitment|application[s]?:)\b",
+            combined,
+            re.I,
+        )
+    )
+    return enrich_site_extraction(soup, source_url, structured)
