@@ -93,6 +93,20 @@ _HIGH_PATTERNS: list[tuple[str, re.Pattern]] = [
             re.I | re.S,
         ),
     ),
+    (
+        "bracket_system_command",
+        re.compile(
+            r"\[\s*(SYSTEM|ADMIN|OVERRIDE|INST|INSTRUCTION|PROMPT|CONTEXT)\s*:",
+            re.I,
+        ),
+    ),
+    (
+        "brace_system_command",
+        re.compile(
+            r"\{\s*(system|admin|override|instruction|prompt)\s*:",
+            re.I,
+        ),
+    ),
 ]
 
 # ---------------------------------------------------------------------------
@@ -103,7 +117,8 @@ _MEDIUM_PATTERNS: list[tuple[str, re.Pattern]] = [
     ("developer_mode", re.compile(r"\bdeveloper\s+mode\b", re.I)),
     ("pretend_to_be", re.compile(r"\bpretend\s+(you\s+are|to\s+be)\b", re.I)),
     ("role_play_as", re.compile(r"\brole\s*-?\s*play\s+as\b", re.I)),
-    ("act_as_ai", re.compile(r"\bact\s+as\s+(a|an)\s+(AI|bot|assistant|language\s+model)\b", re.I)),
+    ("act_as_ai", re.compile(r"\bact\s+as\s+(\w+\s+)*(AI|bot|assistant|language\s+model)\b", re.I)),
+    ("no_restrictions", re.compile(r"\bno\s+restrictions\b", re.I)),
 ]
 
 _MEDIUM_BLOCK_THRESHOLD = 2

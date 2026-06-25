@@ -1,0 +1,211 @@
+{
+  "project_hint": {
+    "name": "FitCheck",
+    "slug": "product-scanner",
+    "description": "Web application that scans e-commerce product pages and determines vehicle compatibility using Playwright rendering and a two-stage LangChain LLM pipeline",
+    "domain": "e-commerce / automotive fitment",
+    "role": "Full-stack vehicle compatibility scanner"
+  },
+  "technologies_found": [
+    {
+      "name": "FastAPI",
+      "evidence": ["backend/app/main.py", "backend/requirements.txt"],
+      "role_in_project": "Hosts the REST API (/api/analyze, /api/health), serves the static frontend, registers middleware (CORS, rate limit), and centralizes AppError exception handling",
+      "typical_purpose": "Async Python web framework for building typed HTTP APIs",
+      "advantages_over_alternatives": "Native async fits Playwright fetch and LangChain ainvoke; automatic OpenAPI docs and Pydantic request/response validation without Flask/Django boilerplate",
+      "alternatives_considered": "Flask, Django REST",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "Playwright",
+      "evidence": ["backend/app/services/fetcher.py", "Dockerfile", "backend/requirements.txt"],
+      "role_in_project": "Launches headless Chromium to render product pages (including SPAs) before HTML extraction; singleton browser reused across requests with lifespan cleanup",
+      "typical_purpose": "Browser automation for reliable page rendering and network-aware fetching",
+      "advantages_over_alternatives": "Executes JavaScript for Next.js/Vue storefronts that static HTTP clients cannot render; built-in navigation and response inspection for bot-block diagnostics",
+      "alternatives_considered": "httpx-only fetch, Selenium, Puppeteer",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "LangChain",
+      "evidence": ["backend/app/services/llm/pipeline.py", "backend/app/services/llm/chains/extract.py", "backend/app/services/llm/chains/analyze.py"],
+      "role_in_project": "LCEL chains for two-stage pipeline: extract product/fitment JSON from page text, then analyze vehicle compatibility; chains cached per provider and stage",
+      "typical_purpose": "Composable LLM application framework with prompts, parsers, and provider adapters",
+      "advantages_over_alternatives": "Prompt | llm | parser pipelines are testable and swappable; provider-specific chat models plug in without rewriting orchestration",
+      "alternatives_considered": "Raw OpenAI/Anthropic SDK calls, LlamaIndex",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "Anthropic Claude",
+      "evidence": ["backend/app/services/llm/models.py", ".env.example"],
+      "role_in_project": "Primary LLM provider in auto mode (claude-3-5-haiku) for extract and analyze stages via langchain-anthropic ChatAnthropic",
+      "typical_purpose": "Cloud LLM for structured extraction and reasoning tasks",
+      "advantages_over_alternatives": "Default-first in auto provider order; Haiku model balances cost and latency for two chained calls per scan",
+      "alternatives_considered": "OpenAI-only, local models",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "OpenAI GPT",
+      "evidence": ["backend/app/services/llm/models.py", ".env.example"],
+      "role_in_project": "Fallback LLM provider (gpt-4o-mini) when Anthropic fails with quota, rate-limit, or overload errors",
+      "typical_purpose": "Cloud LLM API for chat completions",
+      "advantages_over_alternatives": "Automatic failover in _invoke_with_fallback improves availability without user-facing provider selection",
+      "alternatives_considered": "Single-provider only",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "Pydantic",
+      "evidence": ["backend/app/models.py", "backend/app/config.py", "backend/requirements.txt"],
+      "role_in_project": "Defines AnalyzeRequest/AnalyzeResponse models, Settings from environment, and validates API payloads and LLM output shapes",
+      "typical_purpose": "Data validation and settings management for Python applications",
+      "advantages_over_alternatives": "FastAPI-native validation; pydantic-settings loads .env into typed Settings with lru_cache singleton",
+      "alternatives_considered": "dataclasses, manual dict validation",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "BeautifulSoup4",
+      "evidence": ["backend/app/services/extractor.py", "backend/requirements.txt"],
+      "role_in_project": "Parses fetched HTML to extract JSON-LD, __NEXT_DATA__, OG/meta tags, and fitment-related DOM blocks into combined text for the LLM",
+      "typical_purpose": "HTML/XML parsing library for web scraping and content extraction",
+      "advantages_over_alternatives": "CSS selectors and script tag parsing handle heterogeneous e-commerce page structures without site-specific scrapers",
+      "alternatives_considered": "lxml-only, regex on raw HTML",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "slowapi",
+      "evidence": ["backend/app/middleware/rate_limit.py", "backend/app/main.py"],
+      "role_in_project": "Per-IP rate limiting (default 10 req/min) on analyze endpoint via SlowAPIMiddleware and shared Limiter keyed by remote address",
+      "typical_purpose": "Rate limiting middleware for Starlette/FastAPI",
+      "advantages_over_alternatives": "Protects expensive Playwright+LLM pipeline from abuse without custom Redis-backed limiter for a single-node deployment",
+      "alternatives_considered": "nginx rate limits only, custom in-memory counter",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "Docker",
+      "evidence": ["Dockerfile", "docker-compose.yml"],
+      "role_in_project": "Single image bundles Python backend, Playwright Chromium, frontend static files, and healthcheck; compose sets shm_size 1gb for browser stability",
+      "typical_purpose": "Containerized application packaging and deployment",
+      "advantages_over_alternatives": "Reproduces Playwright system dependencies on VPS without manual apt installs; restart unless-stopped for production",
+      "alternatives_considered": "Bare-metal Python venv on VPS",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "pytest",
+      "evidence": ["tests/", "pytest.ini", "backend/requirements.txt"],
+      "role_in_project": "Unit tests for URL validation, extractor, prefilter, LLM pipeline, fetch diagnostics; integration tests for API; smoke_test script for live server checks",
+      "typical_purpose": "Python testing framework",
+      "advantages_over_alternatives": "pytest-asyncio and pytest-mock support async FastAPI routes and mocked Playwright/LLM dependencies",
+      "alternatives_considered": "unittest only",
+      "measurable_outcomes": [],
+      "evidence_strength": "documented"
+    }
+  ],
+  "patterns_found": [
+    {
+      "name": "Two-stage LLM pipeline with early exit",
+      "description": "Extract stage pulls product and fitment data; analyze stage runs only when fitment is detected",
+      "evidence": ["backend/app/services/llm/pipeline.py"],
+      "role_in_project": "Skips second LLM call when extract finds no fitment, returning a no-fitment compatibility result immediately",
+      "advantages_over_alternatives": "Cuts token cost and latency roughly in half on pages without vehicle data; keeps analyze prompt focused on fitment matching",
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "SSRF-safe URL validation",
+      "description": "Blocks localhost, private IPs, file://, internal hostnames, and DNS rebinding before any fetch",
+      "evidence": ["backend/app/services/url_validator.py"],
+      "role_in_project": "validate_url resolves hostnames and rejects private/loopback targets to prevent server-side request forgery on user-supplied product URLs",
+      "advantages_over_alternatives": "Defense in depth beyond scheme checks; socket resolution catches rebinding to metadata endpoints like 169.254.169.254",
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "Structured multi-source content extraction",
+      "description": "Combines JSON-LD, Next.js __NEXT_DATA__, OG tags, meta, and fitment DOM selectors",
+      "evidence": ["backend/app/services/extractor.py"],
+      "role_in_project": "extract_content merges heterogeneous e-commerce signals into combined_text for downstream prefilter and LLM stages",
+      "advantages_over_alternatives": "Works across Shopify, Next.js, and custom fitment tables without per-retailer scraper modules",
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "Rule-based LLM prefilter",
+      "description": "Scores lines by fitment keywords and penalizes noise before sending text to LLM",
+      "evidence": ["backend/app/services/prefilter.py"],
+      "role_in_project": "prefilter_content ranks and truncates extracted text to high-signal fitment lines within max_chars budget",
+      "advantages_over_alternatives": "Reduces input tokens and hallucination risk without an extra LLM summarization call",
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "LLM provider fallback",
+      "description": "Anthropic-first with OpenAI retry on quota/rate-limit errors",
+      "evidence": ["backend/app/services/llm/models.py", "backend/app/services/llm/pipeline.py"],
+      "role_in_project": "_invoke_with_fallback iterates get_provider_order and retries on FALLBACK_ERROR_MARKERS when a second API key is configured",
+      "advantages_over_alternatives": "Improves uptime during provider outages without manual failover configuration per request",
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "Bot protection diagnostics",
+      "description": "Detects Cloudflare, eBay, Amazon, and generic CAPTCHA interstitials in fetch responses",
+      "evidence": ["backend/app/services/fetch_diagnostics.py", "backend/app/services/fetcher.py"],
+      "role_in_project": "detect_bot_protection and build_fetch_diagnostics enrich FETCH_BLOCKED errors with vendor, suggestions, and optional debug payload",
+      "advantages_over_alternatives": "Actionable error responses for marketplace bot blocks instead of opaque 403 failures; supports per-request debug mode",
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "Pipeline orchestration service",
+      "description": "analyzer.analyze_product sequences validate → fetch → extract → prefilter → LLM with per-stage timings",
+      "evidence": ["backend/app/services/analyzer.py"],
+      "role_in_project": "Single orchestrator coordinates services and returns AnalyzeResponse with usage and timings for observability",
+      "advantages_over_alternatives": "Route handlers stay thin; each stage is independently testable and timed for performance tuning",
+      "evidence_strength": "documented"
+    },
+    {
+      "name": "Typed application error taxonomy",
+      "description": "AppError with ErrorCode enum mapped to HTTP status and structured JSON error bodies",
+      "evidence": ["backend/app/errors.py", "backend/app/main.py"],
+      "role_in_project": "Consistent error codes (URL_BLOCKED, FETCH_BLOCKED, LLM_ERROR, etc.) consumed by frontend for user-facing messages and retry hints",
+      "advantages_over_alternatives": "Clients distinguish validation vs fetch vs LLM failures without parsing free-text exception messages",
+      "evidence_strength": "documented"
+    }
+  ],
+  "accomplishments_found": [
+    {
+      "title": "SPA-aware vehicle compatibility scanner",
+      "technologies": ["FastAPI", "Playwright", "LangChain"],
+      "role_in_project": "End-to-end web app that accepts a product URL and vehicle description, renders the page in Chromium, extracts fitment signals, and returns structured compatibility analysis",
+      "advantages_over_alternatives": "Handles JavaScript-rendered storefronts and chains two LLM stages with early exit instead of brittle regex-only fitment parsers",
+      "evidence": ["README.md", "backend/app/services/analyzer.py"],
+      "evidence_strength": "documented"
+    },
+    {
+      "title": "Token-efficient LLM fitment analysis",
+      "technologies": ["LangChain", "BeautifulSoup4"],
+      "role_in_project": "Combines multi-source HTML extraction, rule-based prefilter scoring, and conditional second-stage analyze call to minimize tokens per scan",
+      "advantages_over_alternatives": "Avoids sending full page HTML to the LLM and skips analyze entirely when no fitment data exists",
+      "evidence": ["backend/app/services/prefilter.py", "backend/app/services/llm/pipeline.py"],
+      "evidence_strength": "documented"
+    },
+    {
+      "title": "Marketplace bot-block diagnostics",
+      "technologies": ["Playwright", "FastAPI"],
+      "role_in_project": "Fetch layer detects vendor-specific bot protection and returns structured suggestions and optional debug headers/body preview for 403 and challenge pages",
+      "advantages_over_alternatives": "Operators can diagnose eBay/Amazon blocks on VPS deployments without SSH log diving; debug mode exposed in UI and API",
+      "evidence": ["README.md", "backend/app/services/fetch_diagnostics.py"],
+      "evidence_strength": "documented"
+    }
+  ],
+  "architecture_notes": [
+    "FastAPI serves static frontend from / and /static; POST /api/analyze drives the full pipeline orchestrated by analyzer.analyze_product.",
+    "Playwright browser is a process-wide singleton launched on first fetch and closed on app lifespan shutdown.",
+    "LLM_PROVIDER=auto prefers Anthropic then OpenAI; both API keys enable transparent fallback on rate limits.",
+    "Docker image installs Chromium via playwright install; compose shm_size 1gb prevents browser crashes under load.",
+    "Optional Bright Data residential proxy settings exist in config for datacenter IP bypass (disabled by default).",
+    "Response includes per-stage timings (validate, fetch, extract, prefilter, llm_extract, llm_analyze) and token usage per LLM stage."
+  ]
+}

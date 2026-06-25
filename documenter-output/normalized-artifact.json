@@ -1,0 +1,456 @@
+{
+  "project": {
+    "slug": "product-scanner",
+    "name": "FitCheck",
+    "description": "Web application that scans e-commerce product pages and determines vehicle compatibility using Playwright rendering and a two-stage LangChain LLM pipeline",
+    "metadata": {
+      "domain": "e-commerce / automotive fitment",
+      "role": "Full-stack vehicle compatibility scanner"
+    }
+  },
+  "memories": [
+    {
+      "scope": "project",
+      "category": "accomplishment",
+      "title": "SPA-aware vehicle compatibility scanner",
+      "content": "SPA-aware vehicle compatibility scanner\n\nRole in project: End-to-end web app that accepts a product URL and vehicle description, renders the page in Chromium, extracts fitment signals, and returns structured compatibility analysis\n\nAdvantages over alternatives: Handles JavaScript-rendered storefronts and chains two LLM stages with early exit instead of brittle regex-only fitment parsers\n\nAdoption rationale: End-to-end web app that accepts a product URL and vehicle description, renders the page in Chromium, extracts fitment signals, and returns structured compatibility analysis. Advantages over alternatives: Handles JavaScript-rendered storefronts and chains two LLM stages with early exit instead of brittle regex-only fitment parsers.\n\nUsed FastAPI, Playwright, LangChain as End-to-end web app that accepts a product URL and vehicle description, renders the page in Chromium, extracts fitment signals, and returns structured compatibility analysis, leveraging Handles JavaScript-rendered storefronts and chains two LLM stages with early exit instead of brittle regex-only fitment parsers.",
+      "technologies": [
+        "FastAPI",
+        "Playwright",
+        "LangChain"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "End-to-end web app that accepts a product URL and vehicle description, renders the page in Chromium, extracts fitment signals, and returns structured compatibility analysis",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Handles JavaScript-rendered storefronts and chains two LLM stages with early exit instead of brittle regex-only fitment parsers",
+      "adoption_rationale": "End-to-end web app that accepts a product URL and vehicle description, renders the page in Chromium, extracts fitment signals, and returns structured compatibility analysis. Advantages over alternatives: Handles JavaScript-rendered storefronts and chains two LLM stages with early exit instead of brittle regex-only fitment parsers.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used FastAPI, Playwright, LangChain as End-to-end web app that accepts a product URL and vehicle description, renders the page in Chromium, extracts fitment signals, and returns structured compatibility analysis, leveraging Handles JavaScript-rendered storefronts and chains two LLM stages with early exit instead of brittle regex-only fitment parsers.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "accomplishment",
+      "title": "Token-efficient LLM fitment analysis",
+      "content": "Token-efficient LLM fitment analysis\n\nRole in project: Combines multi-source HTML extraction, rule-based prefilter scoring, and conditional second-stage analyze call to minimize tokens per scan\n\nAdvantages over alternatives: Avoids sending full page HTML to the LLM and skips analyze entirely when no fitment data exists\n\nAdoption rationale: Combines multi-source HTML extraction, rule-based prefilter scoring, and conditional second-stage analyze call to minimize tokens per scan. Advantages over alternatives: Avoids sending full page HTML to the LLM and skips analyze entirely when no fitment data exists.\n\nUsed LangChain, BeautifulSoup4 as Combines multi-source HTML extraction, rule-based prefilter scoring, and conditional second-stage analyze call to minimize tokens per scan, leveraging Avoids sending full page HTML to the LLM and skips analyze entirely when no fitment data exists.",
+      "technologies": [
+        "LangChain",
+        "BeautifulSoup4"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Combines multi-source HTML extraction, rule-based prefilter scoring, and conditional second-stage analyze call to minimize tokens per scan",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Avoids sending full page HTML to the LLM and skips analyze entirely when no fitment data exists",
+      "adoption_rationale": "Combines multi-source HTML extraction, rule-based prefilter scoring, and conditional second-stage analyze call to minimize tokens per scan. Advantages over alternatives: Avoids sending full page HTML to the LLM and skips analyze entirely when no fitment data exists.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used LangChain, BeautifulSoup4 as Combines multi-source HTML extraction, rule-based prefilter scoring, and conditional second-stage analyze call to minimize tokens per scan, leveraging Avoids sending full page HTML to the LLM and skips analyze entirely when no fitment data exists.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "accomplishment",
+      "title": "Marketplace bot-block diagnostics",
+      "content": "Marketplace bot-block diagnostics\n\nRole in project: Fetch layer detects vendor-specific bot protection and returns structured suggestions and optional debug headers/body preview for 403 and challenge pages\n\nAdvantages over alternatives: Operators can diagnose eBay/Amazon blocks on VPS deployments without SSH log diving; debug mode exposed in UI and API\n\nAdoption rationale: Fetch layer detects vendor-specific bot protection and returns structured suggestions and optional debug headers/body preview for 403 and challenge pages. Advantages over alternatives: Operators can diagnose eBay/Amazon blocks on VPS deployments without SSH log diving; debug mode exposed in UI and API.\n\nUsed Playwright, FastAPI as Fetch layer detects vendor-specific bot protection and returns structured suggestions and optional debug headers/body preview for 403 and challenge pages, leveraging Operators can diagnose eBay/Amazon blocks on VPS deployments without SSH log diving; debug mode exposed in UI and API.",
+      "technologies": [
+        "Playwright",
+        "FastAPI"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Fetch layer detects vendor-specific bot protection and returns structured suggestions and optional debug headers/body preview for 403 and challenge pages",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Operators can diagnose eBay/Amazon blocks on VPS deployments without SSH log diving; debug mode exposed in UI and API",
+      "adoption_rationale": "Fetch layer detects vendor-specific bot protection and returns structured suggestions and optional debug headers/body preview for 403 and challenge pages. Advantages over alternatives: Operators can diagnose eBay/Amazon blocks on VPS deployments without SSH log diving; debug mode exposed in UI and API.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used Playwright, FastAPI as Fetch layer detects vendor-specific bot protection and returns structured suggestions and optional debug headers/body preview for 403 and challenge pages, leveraging Operators can diagnose eBay/Amazon blocks on VPS deployments without SSH log diving; debug mode exposed in UI and API.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "FastAPI",
+      "content": "FastAPI: Hosts the REST API (/api/analyze, /api/health), serves the static frontend, registers middleware (CORS, rate limit), and centralizes AppError exception handling\n\nRole in project: Hosts the REST API (/api/analyze, /api/health), serves the static frontend, registers middleware (CORS, rate limit), and centralizes AppError exception handling\n\nTypical purpose: Async Python web framework for building typed HTTP APIs\n\nAdvantages over alternatives: Native async fits Playwright fetch and LangChain ainvoke; automatic OpenAPI docs and Pydantic request/response validation without Flask/Django boilerplate\n\nAdoption rationale: Hosts the REST API (/api/analyze, /api/health), serves the static frontend, registers middleware (CORS, rate limit), and centralizes AppError exception handling. Advantages over alternatives: Native async fits Playwright fetch and LangChain ainvoke; automatic OpenAPI docs and Pydantic request/response validation without Flask/Django boilerplate.\n\nUsed FastAPI as Hosts the REST API (/api/analyze, /api/health), serves the static frontend, registers middleware (CORS, rate limit), and centralizes AppError exception handling, leveraging Native async fits Playwright fetch and LangChain ainvoke; automatic OpenAPI docs and Pydantic request/response validation without Flask/Django boilerplate.",
+      "technologies": [
+        "FastAPI"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Hosts the REST API (/api/analyze, /api/health), serves the static frontend, registers middleware (CORS, rate limit), and centralizes AppError exception handling",
+      "typical_purpose": "Async Python web framework for building typed HTTP APIs",
+      "advantages_over_alternatives": "Native async fits Playwright fetch and LangChain ainvoke; automatic OpenAPI docs and Pydantic request/response validation without Flask/Django boilerplate",
+      "adoption_rationale": "Hosts the REST API (/api/analyze, /api/health), serves the static frontend, registers middleware (CORS, rate limit), and centralizes AppError exception handling. Advantages over alternatives: Native async fits Playwright fetch and LangChain ainvoke; automatic OpenAPI docs and Pydantic request/response validation without Flask/Django boilerplate.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used FastAPI as Hosts the REST API (/api/analyze, /api/health), serves the static frontend, registers middleware (CORS, rate limit), and centralizes AppError exception handling, leveraging Native async fits Playwright fetch and LangChain ainvoke; automatic OpenAPI docs and Pydantic request/response validation without Flask/Django boilerplate.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "Playwright",
+      "content": "Playwright: Launches headless Chromium to render product pages (including SPAs) before HTML extraction; singleton browser reused across requests with lifespan cleanup\n\nRole in project: Launches headless Chromium to render product pages (including SPAs) before HTML extraction; singleton browser reused across requests with lifespan cleanup\n\nTypical purpose: Browser automation for reliable page rendering and network-aware fetching\n\nAdvantages over alternatives: Executes JavaScript for Next.js/Vue storefronts that static HTTP clients cannot render; built-in navigation and response inspection for bot-block diagnostics\n\nAdoption rationale: Launches headless Chromium to render product pages (including SPAs) before HTML extraction; singleton browser reused across requests with lifespan cleanup. Advantages over alternatives: Executes JavaScript for Next.js/Vue storefronts that static HTTP clients cannot render; built-in navigation and response inspection for bot-block diagnostics.\n\nUsed Playwright as Launches headless Chromium to render product pages (including SPAs) before HTML extraction; singleton browser reused across requests with lifespan cleanup, leveraging Executes JavaScript for Next.js/Vue storefronts that static HTTP clients cannot render; built-in navigation and response inspection for bot-block diagnostics.",
+      "technologies": [
+        "Playwright"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Launches headless Chromium to render product pages (including SPAs) before HTML extraction; singleton browser reused across requests with lifespan cleanup",
+      "typical_purpose": "Browser automation for reliable page rendering and network-aware fetching",
+      "advantages_over_alternatives": "Executes JavaScript for Next.js/Vue storefronts that static HTTP clients cannot render; built-in navigation and response inspection for bot-block diagnostics",
+      "adoption_rationale": "Launches headless Chromium to render product pages (including SPAs) before HTML extraction; singleton browser reused across requests with lifespan cleanup. Advantages over alternatives: Executes JavaScript for Next.js/Vue storefronts that static HTTP clients cannot render; built-in navigation and response inspection for bot-block diagnostics.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used Playwright as Launches headless Chromium to render product pages (including SPAs) before HTML extraction; singleton browser reused across requests with lifespan cleanup, leveraging Executes JavaScript for Next.js/Vue storefronts that static HTTP clients cannot render; built-in navigation and response inspection for bot-block diagnostics.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "LangChain",
+      "content": "LangChain: LCEL chains for two-stage pipeline: extract product/fitment JSON from page text, then analyze vehicle compatibility; chains cached per provider and stage\n\nRole in project: LCEL chains for two-stage pipeline: extract product/fitment JSON from page text, then analyze vehicle compatibility; chains cached per provider and stage\n\nTypical purpose: Composable LLM application framework with prompts, parsers, and provider adapters\n\nAdvantages over alternatives: Prompt | llm | parser pipelines are testable and swappable; provider-specific chat models plug in without rewriting orchestration\n\nAdoption rationale: LCEL chains for two-stage pipeline: extract product/fitment JSON from page text, then analyze vehicle compatibility; chains cached per provider and stage. Advantages over alternatives: Prompt | llm | parser pipelines are testable and swappable; provider-specific chat models plug in without rewriting orchestration.\n\nUsed LangChain as LCEL chains for two-stage pipeline: extract product/fitment JSON from page text, then analyze vehicle compatibility; chains cached per provider and stage, leveraging Prompt | llm | parser pipelines are testable and swappable; provider-specific chat models plug in without rewriting orchestration.",
+      "technologies": [
+        "LangChain"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "LCEL chains for two-stage pipeline: extract product/fitment JSON from page text, then analyze vehicle compatibility; chains cached per provider and stage",
+      "typical_purpose": "Composable LLM application framework with prompts, parsers, and provider adapters",
+      "advantages_over_alternatives": "Prompt | llm | parser pipelines are testable and swappable; provider-specific chat models plug in without rewriting orchestration",
+      "adoption_rationale": "LCEL chains for two-stage pipeline: extract product/fitment JSON from page text, then analyze vehicle compatibility; chains cached per provider and stage. Advantages over alternatives: Prompt | llm | parser pipelines are testable and swappable; provider-specific chat models plug in without rewriting orchestration.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used LangChain as LCEL chains for two-stage pipeline: extract product/fitment JSON from page text, then analyze vehicle compatibility; chains cached per provider and stage, leveraging Prompt | llm | parser pipelines are testable and swappable; provider-specific chat models plug in without rewriting orchestration.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "Anthropic Claude",
+      "content": "Anthropic Claude: Primary LLM provider in auto mode (claude-3-5-haiku) for extract and analyze stages via langchain-anthropic ChatAnthropic\n\nRole in project: Primary LLM provider in auto mode (claude-3-5-haiku) for extract and analyze stages via langchain-anthropic ChatAnthropic\n\nTypical purpose: Cloud LLM for structured extraction and reasoning tasks\n\nAdvantages over alternatives: Default-first in auto provider order; Haiku model balances cost and latency for two chained calls per scan\n\nAdoption rationale: Primary LLM provider in auto mode (claude-3-5-haiku) for extract and analyze stages via langchain-anthropic ChatAnthropic. Advantages over alternatives: Default-first in auto provider order; Haiku model balances cost and latency for two chained calls per scan.\n\nUsed Anthropic Claude as Primary LLM provider in auto mode (claude-3-5-haiku) for extract and analyze stages via langchain-anthropic ChatAnthropic, leveraging Default-first in auto provider order; Haiku model balances cost and latency for two chained calls per scan.",
+      "technologies": [
+        "Anthropic Claude"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Primary LLM provider in auto mode (claude-3-5-haiku) for extract and analyze stages via langchain-anthropic ChatAnthropic",
+      "typical_purpose": "Cloud LLM for structured extraction and reasoning tasks",
+      "advantages_over_alternatives": "Default-first in auto provider order; Haiku model balances cost and latency for two chained calls per scan",
+      "adoption_rationale": "Primary LLM provider in auto mode (claude-3-5-haiku) for extract and analyze stages via langchain-anthropic ChatAnthropic. Advantages over alternatives: Default-first in auto provider order; Haiku model balances cost and latency for two chained calls per scan.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used Anthropic Claude as Primary LLM provider in auto mode (claude-3-5-haiku) for extract and analyze stages via langchain-anthropic ChatAnthropic, leveraging Default-first in auto provider order; Haiku model balances cost and latency for two chained calls per scan.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "OpenAI GPT",
+      "content": "OpenAI GPT: Fallback LLM provider (gpt-4o-mini) when Anthropic fails with quota, rate-limit, or overload errors\n\nRole in project: Fallback LLM provider (gpt-4o-mini) when Anthropic fails with quota, rate-limit, or overload errors\n\nTypical purpose: Cloud LLM API for chat completions\n\nAdvantages over alternatives: Automatic failover in _invoke_with_fallback improves availability without user-facing provider selection\n\nAdoption rationale: Fallback LLM provider (gpt-4o-mini) when Anthropic fails with quota, rate-limit, or overload errors. Advantages over alternatives: Automatic failover in _invoke_with_fallback improves availability without user-facing provider selection.\n\nUsed OpenAI GPT as Fallback LLM provider (gpt-4o-mini) when Anthropic fails with quota, rate-limit, or overload errors, leveraging Automatic failover in _invoke_with_fallback improves availability without user-facing provider selection.",
+      "technologies": [
+        "OpenAI GPT"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Fallback LLM provider (gpt-4o-mini) when Anthropic fails with quota, rate-limit, or overload errors",
+      "typical_purpose": "Cloud LLM API for chat completions",
+      "advantages_over_alternatives": "Automatic failover in _invoke_with_fallback improves availability without user-facing provider selection",
+      "adoption_rationale": "Fallback LLM provider (gpt-4o-mini) when Anthropic fails with quota, rate-limit, or overload errors. Advantages over alternatives: Automatic failover in _invoke_with_fallback improves availability without user-facing provider selection.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used OpenAI GPT as Fallback LLM provider (gpt-4o-mini) when Anthropic fails with quota, rate-limit, or overload errors, leveraging Automatic failover in _invoke_with_fallback improves availability without user-facing provider selection.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "Pydantic",
+      "content": "Pydantic: Defines AnalyzeRequest/AnalyzeResponse models, Settings from environment, and validates API payloads and LLM output shapes\n\nRole in project: Defines AnalyzeRequest/AnalyzeResponse models, Settings from environment, and validates API payloads and LLM output shapes\n\nTypical purpose: Data validation and settings management for Python applications\n\nAdvantages over alternatives: FastAPI-native validation; pydantic-settings loads .env into typed Settings with lru_cache singleton\n\nAdoption rationale: Defines AnalyzeRequest/AnalyzeResponse models, Settings from environment, and validates API payloads and LLM output shapes. Advantages over alternatives: FastAPI-native validation; pydantic-settings loads .env into typed Settings with lru_cache singleton.\n\nUsed Pydantic as Defines AnalyzeRequest/AnalyzeResponse models, Settings from environment, and validates API payloads and LLM output shapes, leveraging FastAPI-native validation; pydantic-settings loads .env into typed Settings with lru_cache singleton.",
+      "technologies": [
+        "Pydantic"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Defines AnalyzeRequest/AnalyzeResponse models, Settings from environment, and validates API payloads and LLM output shapes",
+      "typical_purpose": "Data validation and settings management for Python applications",
+      "advantages_over_alternatives": "FastAPI-native validation; pydantic-settings loads .env into typed Settings with lru_cache singleton",
+      "adoption_rationale": "Defines AnalyzeRequest/AnalyzeResponse models, Settings from environment, and validates API payloads and LLM output shapes. Advantages over alternatives: FastAPI-native validation; pydantic-settings loads .env into typed Settings with lru_cache singleton.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used Pydantic as Defines AnalyzeRequest/AnalyzeResponse models, Settings from environment, and validates API payloads and LLM output shapes, leveraging FastAPI-native validation; pydantic-settings loads .env into typed Settings with lru_cache singleton.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "BeautifulSoup4",
+      "content": "BeautifulSoup4: Parses fetched HTML to extract JSON-LD, __NEXT_DATA__, OG/meta tags, and fitment-related DOM blocks into combined text for the LLM\n\nRole in project: Parses fetched HTML to extract JSON-LD, __NEXT_DATA__, OG/meta tags, and fitment-related DOM blocks into combined text for the LLM\n\nTypical purpose: HTML/XML parsing library for web scraping and content extraction\n\nAdvantages over alternatives: CSS selectors and script tag parsing handle heterogeneous e-commerce page structures without site-specific scrapers\n\nAdoption rationale: Parses fetched HTML to extract JSON-LD, __NEXT_DATA__, OG/meta tags, and fitment-related DOM blocks into combined text for the LLM. Advantages over alternatives: CSS selectors and script tag parsing handle heterogeneous e-commerce page structures without site-specific scrapers.\n\nUsed BeautifulSoup4 as Parses fetched HTML to extract JSON-LD, __NEXT_DATA__, OG/meta tags, and fitment-related DOM blocks into combined text for the LLM, leveraging CSS selectors and script tag parsing handle heterogeneous e-commerce page structures without site-specific scrapers.",
+      "technologies": [
+        "BeautifulSoup4"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Parses fetched HTML to extract JSON-LD, __NEXT_DATA__, OG/meta tags, and fitment-related DOM blocks into combined text for the LLM",
+      "typical_purpose": "HTML/XML parsing library for web scraping and content extraction",
+      "advantages_over_alternatives": "CSS selectors and script tag parsing handle heterogeneous e-commerce page structures without site-specific scrapers",
+      "adoption_rationale": "Parses fetched HTML to extract JSON-LD, __NEXT_DATA__, OG/meta tags, and fitment-related DOM blocks into combined text for the LLM. Advantages over alternatives: CSS selectors and script tag parsing handle heterogeneous e-commerce page structures without site-specific scrapers.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used BeautifulSoup4 as Parses fetched HTML to extract JSON-LD, __NEXT_DATA__, OG/meta tags, and fitment-related DOM blocks into combined text for the LLM, leveraging CSS selectors and script tag parsing handle heterogeneous e-commerce page structures without site-specific scrapers.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "slowapi",
+      "content": "slowapi: Per-IP rate limiting (default 10 req/min) on analyze endpoint via SlowAPIMiddleware and shared Limiter keyed by remote address\n\nRole in project: Per-IP rate limiting (default 10 req/min) on analyze endpoint via SlowAPIMiddleware and shared Limiter keyed by remote address\n\nTypical purpose: Rate limiting middleware for Starlette/FastAPI\n\nAdvantages over alternatives: Protects expensive Playwright+LLM pipeline from abuse without custom Redis-backed limiter for a single-node deployment\n\nAdoption rationale: Per-IP rate limiting (default 10 req/min) on analyze endpoint via SlowAPIMiddleware and shared Limiter keyed by remote address. Advantages over alternatives: Protects expensive Playwright+LLM pipeline from abuse without custom Redis-backed limiter for a single-node deployment.\n\nUsed slowapi as Per-IP rate limiting (default 10 req/min) on analyze endpoint via SlowAPIMiddleware and shared Limiter keyed by remote address, leveraging Protects expensive Playwright+LLM pipeline from abuse without custom Redis-backed limiter for a single-node deployment.",
+      "technologies": [
+        "slowapi"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Per-IP rate limiting (default 10 req/min) on analyze endpoint via SlowAPIMiddleware and shared Limiter keyed by remote address",
+      "typical_purpose": "Rate limiting middleware for Starlette/FastAPI",
+      "advantages_over_alternatives": "Protects expensive Playwright+LLM pipeline from abuse without custom Redis-backed limiter for a single-node deployment",
+      "adoption_rationale": "Per-IP rate limiting (default 10 req/min) on analyze endpoint via SlowAPIMiddleware and shared Limiter keyed by remote address. Advantages over alternatives: Protects expensive Playwright+LLM pipeline from abuse without custom Redis-backed limiter for a single-node deployment.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used slowapi as Per-IP rate limiting (default 10 req/min) on analyze endpoint via SlowAPIMiddleware and shared Limiter keyed by remote address, leveraging Protects expensive Playwright+LLM pipeline from abuse without custom Redis-backed limiter for a single-node deployment.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "Docker",
+      "content": "Docker: Single image bundles Python backend, Playwright Chromium, frontend static files, and healthcheck; compose sets shm_size 1gb for browser stability\n\nRole in project: Single image bundles Python backend, Playwright Chromium, frontend static files, and healthcheck; compose sets shm_size 1gb for browser stability\n\nTypical purpose: Containerized application packaging and deployment\n\nAdvantages over alternatives: Reproduces Playwright system dependencies on VPS without manual apt installs; restart unless-stopped for production\n\nAdoption rationale: Single image bundles Python backend, Playwright Chromium, frontend static files, and healthcheck; compose sets shm_size 1gb for browser stability. Advantages over alternatives: Reproduces Playwright system dependencies on VPS without manual apt installs; restart unless-stopped for production.\n\nUsed Docker as Single image bundles Python backend, Playwright Chromium, frontend static files, and healthcheck; compose sets shm_size 1gb for browser stability, leveraging Reproduces Playwright system dependencies on VPS without manual apt installs; restart unless-stopped for production.",
+      "technologies": [
+        "Docker"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Single image bundles Python backend, Playwright Chromium, frontend static files, and healthcheck; compose sets shm_size 1gb for browser stability",
+      "typical_purpose": "Containerized application packaging and deployment",
+      "advantages_over_alternatives": "Reproduces Playwright system dependencies on VPS without manual apt installs; restart unless-stopped for production",
+      "adoption_rationale": "Single image bundles Python backend, Playwright Chromium, frontend static files, and healthcheck; compose sets shm_size 1gb for browser stability. Advantages over alternatives: Reproduces Playwright system dependencies on VPS without manual apt installs; restart unless-stopped for production.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used Docker as Single image bundles Python backend, Playwright Chromium, frontend static files, and healthcheck; compose sets shm_size 1gb for browser stability, leveraging Reproduces Playwright system dependencies on VPS without manual apt installs; restart unless-stopped for production.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "technology",
+      "title": "pytest",
+      "content": "pytest: Unit tests for URL validation, extractor, prefilter, LLM pipeline, fetch diagnostics; integration tests for API; smoke_test script for live server checks\n\nRole in project: Unit tests for URL validation, extractor, prefilter, LLM pipeline, fetch diagnostics; integration tests for API; smoke_test script for live server checks\n\nTypical purpose: Python testing framework\n\nAdvantages over alternatives: pytest-asyncio and pytest-mock support async FastAPI routes and mocked Playwright/LLM dependencies\n\nAdoption rationale: Unit tests for URL validation, extractor, prefilter, LLM pipeline, fetch diagnostics; integration tests for API; smoke_test script for live server checks. Advantages over alternatives: pytest-asyncio and pytest-mock support async FastAPI routes and mocked Playwright/LLM dependencies.\n\nUsed pytest as Unit tests for URL validation, extractor, prefilter, LLM pipeline, fetch diagnostics; integration tests for API; smoke_test script for live server checks, leveraging pytest-asyncio and pytest-mock support async FastAPI routes and mocked Playwright/LLM dependencies.",
+      "technologies": [
+        "pytest"
+      ],
+      "tags": [
+        "resume"
+      ],
+      "role_in_project": "Unit tests for URL validation, extractor, prefilter, LLM pipeline, fetch diagnostics; integration tests for API; smoke_test script for live server checks",
+      "typical_purpose": "Python testing framework",
+      "advantages_over_alternatives": "pytest-asyncio and pytest-mock support async FastAPI routes and mocked Playwright/LLM dependencies",
+      "adoption_rationale": "Unit tests for URL validation, extractor, prefilter, LLM pipeline, fetch diagnostics; integration tests for API; smoke_test script for live server checks. Advantages over alternatives: pytest-asyncio and pytest-mock support async FastAPI routes and mocked Playwright/LLM dependencies.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "resume_statement": "Used pytest as Unit tests for URL validation, extractor, prefilter, LLM pipeline, fetch diagnostics; integration tests for API; smoke_test script for live server checks, leveraging pytest-asyncio and pytest-mock support async FastAPI routes and mocked Playwright/LLM dependencies.",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "pattern",
+      "title": "Two-stage LLM pipeline with early exit",
+      "content": "Two-stage LLM pipeline with early exit: Extract stage pulls product and fitment data; analyze stage runs only when fitment is detected\n\nRole in project: Skips second LLM call when extract finds no fitment, returning a no-fitment compatibility result immediately\n\nAdvantages over alternatives: Cuts token cost and latency roughly in half on pages without vehicle data; keeps analyze prompt focused on fitment matching\n\nAdoption rationale: Skips second LLM call when extract finds no fitment, returning a no-fitment compatibility result immediately. Advantages over alternatives: Cuts token cost and latency roughly in half on pages without vehicle data; keeps analyze prompt focused on fitment matching.",
+      "technologies": [],
+      "tags": [],
+      "role_in_project": "Skips second LLM call when extract finds no fitment, returning a no-fitment compatibility result immediately",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Cuts token cost and latency roughly in half on pages without vehicle data; keeps analyze prompt focused on fitment matching",
+      "adoption_rationale": "Skips second LLM call when extract finds no fitment, returning a no-fitment compatibility result immediately. Advantages over alternatives: Cuts token cost and latency roughly in half on pages without vehicle data; keeps analyze prompt focused on fitment matching.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "pattern",
+      "title": "SSRF-safe URL validation",
+      "content": "SSRF-safe URL validation: Blocks localhost, private IPs, file://, internal hostnames, and DNS rebinding before any fetch\n\nRole in project: validate_url resolves hostnames and rejects private/loopback targets to prevent server-side request forgery on user-supplied product URLs\n\nAdvantages over alternatives: Defense in depth beyond scheme checks; socket resolution catches rebinding to metadata endpoints like 169.254.169.254\n\nAdoption rationale: validate_url resolves hostnames and rejects private/loopback targets to prevent server-side request forgery on user-supplied product URLs. Advantages over alternatives: Defense in depth beyond scheme checks; socket resolution catches rebinding to metadata endpoints like 169.254.169.254.",
+      "technologies": [],
+      "tags": [],
+      "role_in_project": "validate_url resolves hostnames and rejects private/loopback targets to prevent server-side request forgery on user-supplied product URLs",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Defense in depth beyond scheme checks; socket resolution catches rebinding to metadata endpoints like 169.254.169.254",
+      "adoption_rationale": "validate_url resolves hostnames and rejects private/loopback targets to prevent server-side request forgery on user-supplied product URLs. Advantages over alternatives: Defense in depth beyond scheme checks; socket resolution catches rebinding to metadata endpoints like 169.254.169.254.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "pattern",
+      "title": "Structured multi-source content extraction",
+      "content": "Structured multi-source content extraction: Combines JSON-LD, Next.js __NEXT_DATA__, OG tags, meta, and fitment DOM selectors\n\nRole in project: extract_content merges heterogeneous e-commerce signals into combined_text for downstream prefilter and LLM stages\n\nAdvantages over alternatives: Works across Shopify, Next.js, and custom fitment tables without per-retailer scraper modules\n\nAdoption rationale: extract_content merges heterogeneous e-commerce signals into combined_text for downstream prefilter and LLM stages. Advantages over alternatives: Works across Shopify, Next.js, and custom fitment tables without per-retailer scraper modules.",
+      "technologies": [],
+      "tags": [],
+      "role_in_project": "extract_content merges heterogeneous e-commerce signals into combined_text for downstream prefilter and LLM stages",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Works across Shopify, Next.js, and custom fitment tables without per-retailer scraper modules",
+      "adoption_rationale": "extract_content merges heterogeneous e-commerce signals into combined_text for downstream prefilter and LLM stages. Advantages over alternatives: Works across Shopify, Next.js, and custom fitment tables without per-retailer scraper modules.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "pattern",
+      "title": "Rule-based LLM prefilter",
+      "content": "Rule-based LLM prefilter: Scores lines by fitment keywords and penalizes noise before sending text to LLM\n\nRole in project: prefilter_content ranks and truncates extracted text to high-signal fitment lines within max_chars budget\n\nAdvantages over alternatives: Reduces input tokens and hallucination risk without an extra LLM summarization call\n\nAdoption rationale: prefilter_content ranks and truncates extracted text to high-signal fitment lines within max_chars budget. Advantages over alternatives: Reduces input tokens and hallucination risk without an extra LLM summarization call.",
+      "technologies": [],
+      "tags": [],
+      "role_in_project": "prefilter_content ranks and truncates extracted text to high-signal fitment lines within max_chars budget",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Reduces input tokens and hallucination risk without an extra LLM summarization call",
+      "adoption_rationale": "prefilter_content ranks and truncates extracted text to high-signal fitment lines within max_chars budget. Advantages over alternatives: Reduces input tokens and hallucination risk without an extra LLM summarization call.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "pattern",
+      "title": "LLM provider fallback",
+      "content": "LLM provider fallback: Anthropic-first with OpenAI retry on quota/rate-limit errors\n\nRole in project: _invoke_with_fallback iterates get_provider_order and retries on FALLBACK_ERROR_MARKERS when a second API key is configured\n\nAdvantages over alternatives: Improves uptime during provider outages without manual failover configuration per request\n\nAdoption rationale: _invoke_with_fallback iterates get_provider_order and retries on FALLBACK_ERROR_MARKERS when a second API key is configured. Advantages over alternatives: Improves uptime during provider outages without manual failover configuration per request.",
+      "technologies": [],
+      "tags": [],
+      "role_in_project": "_invoke_with_fallback iterates get_provider_order and retries on FALLBACK_ERROR_MARKERS when a second API key is configured",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Improves uptime during provider outages without manual failover configuration per request",
+      "adoption_rationale": "_invoke_with_fallback iterates get_provider_order and retries on FALLBACK_ERROR_MARKERS when a second API key is configured. Advantages over alternatives: Improves uptime during provider outages without manual failover configuration per request.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "pattern",
+      "title": "Bot protection diagnostics",
+      "content": "Bot protection diagnostics: Detects Cloudflare, eBay, Amazon, and generic CAPTCHA interstitials in fetch responses\n\nRole in project: detect_bot_protection and build_fetch_diagnostics enrich FETCH_BLOCKED errors with vendor, suggestions, and optional debug payload\n\nAdvantages over alternatives: Actionable error responses for marketplace bot blocks instead of opaque 403 failures; supports per-request debug mode\n\nAdoption rationale: detect_bot_protection and build_fetch_diagnostics enrich FETCH_BLOCKED errors with vendor, suggestions, and optional debug payload. Advantages over alternatives: Actionable error responses for marketplace bot blocks instead of opaque 403 failures; supports per-request debug mode.",
+      "technologies": [],
+      "tags": [],
+      "role_in_project": "detect_bot_protection and build_fetch_diagnostics enrich FETCH_BLOCKED errors with vendor, suggestions, and optional debug payload",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Actionable error responses for marketplace bot blocks instead of opaque 403 failures; supports per-request debug mode",
+      "adoption_rationale": "detect_bot_protection and build_fetch_diagnostics enrich FETCH_BLOCKED errors with vendor, suggestions, and optional debug payload. Advantages over alternatives: Actionable error responses for marketplace bot blocks instead of opaque 403 failures; supports per-request debug mode.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "pattern",
+      "title": "Pipeline orchestration service",
+      "content": "Pipeline orchestration service: analyzer.analyze_product sequences validate → fetch → extract → prefilter → LLM with per-stage timings\n\nRole in project: Single orchestrator coordinates services and returns AnalyzeResponse with usage and timings for observability\n\nAdvantages over alternatives: Route handlers stay thin; each stage is independently testable and timed for performance tuning\n\nAdoption rationale: Single orchestrator coordinates services and returns AnalyzeResponse with usage and timings for observability. Advantages over alternatives: Route handlers stay thin; each stage is independently testable and timed for performance tuning.",
+      "technologies": [],
+      "tags": [],
+      "role_in_project": "Single orchestrator coordinates services and returns AnalyzeResponse with usage and timings for observability",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Route handlers stay thin; each stage is independently testable and timed for performance tuning",
+      "adoption_rationale": "Single orchestrator coordinates services and returns AnalyzeResponse with usage and timings for observability. Advantages over alternatives: Route handlers stay thin; each stage is independently testable and timed for performance tuning.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "pattern",
+      "title": "Typed application error taxonomy",
+      "content": "Typed application error taxonomy: AppError with ErrorCode enum mapped to HTTP status and structured JSON error bodies\n\nRole in project: Consistent error codes (URL_BLOCKED, FETCH_BLOCKED, LLM_ERROR, etc.) consumed by frontend for user-facing messages and retry hints\n\nAdvantages over alternatives: Clients distinguish validation vs fetch vs LLM failures without parsing free-text exception messages\n\nAdoption rationale: Consistent error codes (URL_BLOCKED, FETCH_BLOCKED, LLM_ERROR, etc.) consumed by frontend for user-facing messages and retry hints. Advantages over alternatives: Clients distinguish validation vs fetch vs LLM failures without parsing free-text exception messages.",
+      "technologies": [],
+      "tags": [],
+      "role_in_project": "Consistent error codes (URL_BLOCKED, FETCH_BLOCKED, LLM_ERROR, etc.) consumed by frontend for user-facing messages and retry hints",
+      "typical_purpose": null,
+      "advantages_over_alternatives": "Clients distinguish validation vs fetch vs LLM failures without parsing free-text exception messages",
+      "adoption_rationale": "Consistent error codes (URL_BLOCKED, FETCH_BLOCKED, LLM_ERROR, etc.) consumed by frontend for user-facing messages and retry hints. Advantages over alternatives: Clients distinguish validation vs fetch vs LLM failures without parsing free-text exception messages.",
+      "measurable_outcome": null,
+      "evidence_strength": "documented",
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "architecture",
+      "title": "FastAPI serves static frontend from / and /static; POST /api/analyze drives the ...",
+      "content": "FastAPI serves static frontend from / and /static; POST /api/analyze drives the full pipeline orchestrated by analyzer.analyze_product.",
+      "technologies": [],
+      "tags": [],
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "architecture",
+      "title": "Playwright browser is a process-wide singleton launched on first fetch and close...",
+      "content": "Playwright browser is a process-wide singleton launched on first fetch and closed on app lifespan shutdown.",
+      "technologies": [],
+      "tags": [],
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "architecture",
+      "title": "LLM_PROVIDER=auto prefers Anthropic then OpenAI; both API keys enable transparen...",
+      "content": "LLM_PROVIDER=auto prefers Anthropic then OpenAI; both API keys enable transparent fallback on rate limits.",
+      "technologies": [],
+      "tags": [],
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "architecture",
+      "title": "Docker image installs Chromium via playwright install; compose shm_size 1gb prev...",
+      "content": "Docker image installs Chromium via playwright install; compose shm_size 1gb prevents browser crashes under load.",
+      "technologies": [],
+      "tags": [],
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "architecture",
+      "title": "Optional Bright Data residential proxy settings exist in config for datacenter I...",
+      "content": "Optional Bright Data residential proxy settings exist in config for datacenter IP bypass (disabled by default).",
+      "technologies": [],
+      "tags": [],
+      "metadata": {}
+    },
+    {
+      "scope": "project",
+      "category": "architecture",
+      "title": "Response includes per-stage timings (validate, fetch, extract, prefilter, llm_ex...",
+      "content": "Response includes per-stage timings (validate, fetch, extract, prefilter, llm_extract, llm_analyze) and token usage per LLM stage.",
+      "technologies": [],
+      "tags": [],
+      "metadata": {}
+    }
+  ],
+  "normalization_report": {
+    "resume_ready_count": 13,
+    "rejected": [],
+    "warnings": []
+  }
+}
