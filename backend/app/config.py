@@ -25,6 +25,19 @@ class Settings(BaseSettings):
 
     playwright_headless: bool = True
 
+    # Rate limiting
+    rate_limit_per_hour: int = 60
+    trust_proxy_headers: bool = False
+
+    # Concurrency
+    max_concurrent_analyze: int = 2
+
+    # Logging
+    log_dir: str = ""
+    log_level: str = "INFO"
+    log_max_bytes: int = 10_485_760
+    log_backup_count: int = 10
+
 
 @lru_cache
 def get_settings() -> Settings:

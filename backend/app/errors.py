@@ -33,7 +33,11 @@ class ErrorCode(str, Enum):
 
     # Rate limit / server
     RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED"
+    SERVER_BUSY = "SERVER_BUSY"
     INTERNAL_ERROR = "INTERNAL_ERROR"
+
+    # Security
+    PROMPT_INJECTION_DETECTED = "PROMPT_INJECTION_DETECTED"
 
 
 class AppError(Exception):

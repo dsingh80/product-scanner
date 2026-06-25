@@ -1,5 +1,6 @@
 """Two-stage LangChain LCEL pipeline: extract → analyze."""
 
+import logging
 import time
 from typing import Any
 
@@ -15,6 +16,9 @@ from app.services.llm.callbacks import TokenUsageCallback
 from app.services.llm.chains.analyze import build_analyze_chain
 from app.services.llm.chains.extract import build_extract_chain
 from app.services.llm.models import ProviderName, create_llm, get_provider_order, is_fallback_worthy
+from app.services.security.injection_guard import scan_llm_output
+
+logger = logging.getLogger(__name__)
 
 
 class LLMPipeline:
@@ -64,14 +68,29 @@ class LLMPipeline:
                     continue
                 raise AppError(
                     ErrorCode.LLM_ERROR,
-                    f"{stage.capitalize()} stage failed: {exc}",
+                    f"AI processing failed at {stage} stage."
+                    if not self.settings.debug
+                    else f"{stage.capitalize()} stage failed: {exc}",
                     status_code=502,
+                    details={
+                        "stage": stage,
+                        "provider_attempted": provider,
+                        "retryable": is_fallback_worthy(exc),
+                        **({"error": str(exc)[:200]} if self.settings.debug else {}),
+                    },
                 ) from exc
 
         raise AppError(
             ErrorCode.LLM_ERROR,
-            f"{stage.capitalize()} stage failed: {last_exc}",
+            f"AI processing failed at {stage} stage."
+            if not self.settings.debug
+            else f"{stage.capitalize()} stage failed: {last_exc}",
             status_code=502,
+            details={
+                "stage": stage,
+                "retryable": False,
+                **({"error": str(last_exc)[:200]} if self.settings.debug else {}),
+            },
         ) from last_exc
 
     async def run(
@@ -83,6 +102,15 @@ class LLMPipeline:
         usage = StageUsage()
         timings: dict[str, float] = {"llm_extract_ms": 0, "llm_analyze_ms": 0}
 
+        _safe_compatibility = CompatibilityResult(
+            compatible=None,
+            confidence="none",
+            summary="Analysis could not be completed.",
+            matched_vehicles=[],
+            notes=[],
+            fitment_found=False,
+        )
+
         t0 = time.perf_counter()
         extract_result, extract_usage, _extract_provider = await self._invoke_with_fallback(
             "extract",
@@ -90,6 +118,15 @@ class LLMPipeline:
         )
         timings["llm_extract_ms"] = (time.perf_counter() - t0) * 1000
         usage.extract = extract_usage
+
+        # Scan LLM output for signs of prompt-leak or manipulation.
+        extract_scan = scan_llm_output(extract_result)
+        if extract_scan.blocked:
+            logger.warning(
+                "llm_output_blocked",
+                extra={"stage": "extract", "field": extract_scan.field_name},
+            )
+            return ProductInfo(source_url=source_url), _safe_compatibility, usage, timings
 
         product = ProductInfo(
             name=extract_result.get("name"),
@@ -125,6 +162,14 @@ class LLMPipeline:
         )
         timings["llm_analyze_ms"] = (time.perf_counter() - t1) * 1000
         usage.analyze = analyze_usage
+
+        analyze_scan = scan_llm_output(analyze_result)
+        if analyze_scan.blocked:
+            logger.warning(
+                "llm_output_blocked",
+                extra={"stage": "analyze", "field": analyze_scan.field_name},
+            )
+            return product, _safe_compatibility, usage, timings
 
         compatibility = CompatibilityResult(
             compatible=analyze_result.get("compatible"),

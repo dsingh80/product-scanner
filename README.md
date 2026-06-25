@@ -9,9 +9,12 @@ A web application that scans e-commerce product pages and determines vehicle com
 - **Structured content extraction** — JSON-LD, `__NEXT_DATA__`, OG tags, fitment blocks
 - **Rule-based pre-filter** — reduces token usage before LLM calls
 - **Two-stage LLM pipeline** — extract product/fitment data, then analyze compatibility (early exit when no fitment found)
+- **Prompt injection defense** — heuristic scanner on vehicle input + page content + LLM output; hardened prompts with XML delimiters and defensive system instructions; LCEL-level guards in both chains
 - **Mobile-first frontend** — paste URL + vehicle form with loading states and results
 - **Browser capture mode** — bookmarklet or paste page text for eBay/Amazon when server fetch is blocked
-- **Rate limiting** — 10 requests/minute per IP (configurable)
+- **Tiered rate limiting** — per-minute and per-hour caps per IP (proxy-header-aware); concurrency cap on LLM pipeline
+- **Actionable error responses** — every error includes suggestions, a retryable flag, and a request ID for support correlation
+- **Persistent structured logs** — JSON-lines via `RotatingFileHandler` to a Docker-mounted volume; stdout stream preserved for `docker compose logs`
 - **Docker support** — single image with Playwright Chromium
 
 ## Quick Start (Local)
@@ -70,7 +73,7 @@ cp .env.example .env
 docker compose up --build -d
 ```
 
-The app will be available at http://localhost:8000.
+The app will be available at http://localhost:3001 (host port **3001** → container port **8000**).
 
 > **Note:** Docker Compose sets `shm_size: 1gb` for Playwright stability.
 
@@ -121,10 +124,10 @@ PLAYWRIGHT_HEADLESS=true
 ```bash
 docker compose up --build -d
 docker compose ps
-curl http://localhost:8000/api/health
+curl http://localhost:3001/api/health
 ```
 
-The app listens on port **8000** inside the server. Do not expose 8000 publicly long-term — put a reverse proxy in front (next step).
+The app listens on port **3001** on the host (mapped to 8000 inside the container). Do not expose 3001 publicly long-term — put a reverse proxy in front (next step).
 
 ### 5. Reverse proxy with HTTPS (Caddy — easiest)
 
@@ -141,7 +144,7 @@ Create `/etc/caddy/Caddyfile`:
 
 ```caddyfile
 yourdomain.com {
-    reverse_proxy localhost:8000
+    reverse_proxy localhost:3001
 }
 ```
 
@@ -165,7 +168,7 @@ server {
     server_name yourdomain.com;
 
     location / {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://127.0.0.1:3001;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -191,7 +194,7 @@ sudo ufw allow 'Nginx Full'   # or: sudo ufw allow 80,443/tcp
 sudo ufw enable
 ```
 
-Block direct access to port 8000 from the internet — only the reverse proxy should reach it.
+Block direct access to port 3001 from the internet — only the reverse proxy should reach it.
 
 ### 7. Keep it running (auto-restart)
 
@@ -225,10 +228,52 @@ Once HTTPS is configured, open **https://yourdomain.com** on any device. The UI 
 | Step | Command / check |
 |------|-----------------|
 | Health | `curl https://yourdomain.com/api/health` |
-| Logs | `docker compose logs -f` |
+| Logs (stream) | `docker compose logs -f` |
+| Logs (file) | `tail -f logs/app.log \| jq .` |
 | Disk | Image ~1.2 GB; ensure 10+ GB free |
 | API keys | Never commit `.env`; keys stay server-side only |
-| Rate limit | Tune `RATE_LIMIT_PER_MINUTE` for your usage |
+| Rate limit | Tune `RATE_LIMIT_PER_MINUTE` and `RATE_LIMIT_PER_HOUR` for your usage |
+
+### Production `.env` recommendations
+
+```env
+TRUST_PROXY_HEADERS=true         # required so rate limits use real client IPs
+RATE_LIMIT_PER_MINUTE=10
+RATE_LIMIT_PER_HOUR=60
+MAX_CONCURRENT_ANALYZE=2         # raise if your VPS has more than 2 GB RAM
+LOG_DIR=/app/logs                # maps to ./logs on the host via the docker-compose volume
+LOG_LEVEL=INFO
+```
+
+### Nginx — required headers for proxy-aware rate limiting
+
+Add these lines to your `location /` block so `TRUST_PROXY_HEADERS=true` reads the real client IP:
+
+```nginx
+proxy_set_header X-Real-IP        $remote_addr;
+proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;
+```
+
+Optional Nginx-level throttle as a first line of defence (add inside the `server {}` block):
+
+```nginx
+limit_req_zone $binary_remote_addr zone=fitcheck:10m rate=10r/m;
+location /api/analyze {
+    limit_req zone=fitcheck burst=3 nodelay;
+    proxy_pass http://127.0.0.1:3001;
+}
+```
+
+### Security
+
+FitCheck uses defense-in-depth against prompt injection:
+
+1. **Heuristic pre-scan** — blocks known jailbreak/instruction-override phrases in the vehicle field and prefiltered page content before any LLM call (zero token spend on blocked requests).
+2. **LCEL chain guards** — `RunnableLambda` guards at the front of each LangChain chain re-check input fields at the chain level.
+3. **Post-LLM output scan** — both extract and analyze results are scanned for system-prompt leakage markers before being returned.
+4. **Hardened prompts** — defensive system instructions and XML delimiters in `prompts.py` separate untrusted data from model instructions (user-maintained, not auto-generated).
+
+Every error response includes a `request_id` (also echoed as `X-Request-ID` header) for correlating errors across logs and user reports.
 
 ## API
 
@@ -300,10 +345,17 @@ Response includes `product`, `compatibility`, `usage` (per-stage token counts), 
 | `LLM_PROVIDER` | `auto` | `auto` (Anthropic → OpenAI fallback), `openai`, or `anthropic` |
 | `OPENAI_API_KEY` | — | OpenAI API key |
 | `ANTHROPIC_API_KEY` | — | Anthropic API key |
-| `RATE_LIMIT_PER_MINUTE` | `10` | API rate limit per IP |
+| `RATE_LIMIT_PER_MINUTE` | `10` | Per-IP request cap per minute on `/api/analyze` |
+| `RATE_LIMIT_PER_HOUR` | `60` | Per-IP request cap per hour on `/api/analyze` |
+| `TRUST_PROXY_HEADERS` | `false` | Set `true` when behind Nginx/Caddy so real client IPs are used for rate limiting |
+| `MAX_CONCURRENT_ANALYZE` | `2` | Max simultaneous LLM pipeline invocations (excess requests get HTTP 503) |
 | `FETCH_TIMEOUT_MS` | `30000` | Playwright page load timeout |
 | `MAX_EXTRACT_CHARS` | `12000` | Max extracted text length |
 | `CORS_ORIGINS` | `*` | Comma-separated allowed origins |
+| `LOG_DIR` | `` | Directory for rotating log files (empty = stdout only) |
+| `LOG_LEVEL` | `INFO` | Logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+| `LOG_MAX_BYTES` | `10485760` | Max size per log file before rotation (default 10 MB) |
+| `LOG_BACKUP_COUNT` | `10` | Number of rotated log files to keep (default ~100 MB total) |
 
 ### eBay / Amazon — use the bookmarklet
 

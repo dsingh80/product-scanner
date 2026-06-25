@@ -16,7 +16,8 @@ router = APIRouter(prefix="/api")
 
 
 @router.get("/health")
-async def health():
+@limiter.limit("60/minute")
+async def health(request: Request):
     settings = get_settings()
     playwright = await check_playwright_health()
     llm = check_llm_configured(settings)
@@ -30,6 +31,7 @@ async def health():
 
 @router.post("/analyze", response_model=AnalyzeResponse)
 @limiter.limit(lambda: f"{get_settings().rate_limit_per_minute}/minute")
+@limiter.limit(lambda: f"{get_settings().rate_limit_per_hour}/hour")
 async def analyze(request: Request, body: AnalyzeRequest):
     settings = get_settings()
     return await analyze_product(body, settings)

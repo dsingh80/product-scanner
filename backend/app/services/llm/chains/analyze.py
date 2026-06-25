@@ -9,6 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
 
 from app.services.llm.prompts import ANALYZE_SYSTEM, ANALYZE_USER
+from app.services.security.langchain_guard import make_input_guard
 
 
 def _parse_json(text: str) -> dict[str, Any]:
@@ -37,4 +38,5 @@ def build_analyze_chain(llm):
         ("system", ANALYZE_SYSTEM),
         ("human", ANALYZE_USER),
     ])
-    return prompt | llm | StrOutputParser() | RunnableLambda(_parse_json)
+    guard = make_input_guard("vehicle_description")
+    return guard | prompt | llm | StrOutputParser() | RunnableLambda(_parse_json)

@@ -8,6 +8,7 @@ const errorMessage = document.getElementById("error-message");
 const errorCode = document.getElementById("error-code");
 const errorRetry = document.getElementById("error-retry");
 const errorSuggestions = document.getElementById("error-suggestions");
+const errorRequestId = document.getElementById("error-request-id");
 const errorDebug = document.getElementById("error-debug");
 const errorDebugBody = document.getElementById("error-debug-body");
 const resultsPanel = document.getElementById("results");
@@ -91,9 +92,6 @@ function decodeImportHash() {
     importedPageContent = JSON.parse(json);
     history.replaceState(null, "", location.pathname + location.search);
     setMode("paste");
-    if (importedPageContent.url) {
-      document.getElementById("paste-url").value = importedPageContent.url;
-    }
     if (importedPageContent.text) {
       document.getElementById("paste-content").value = importedPageContent.text.slice(0, 50000);
     }
@@ -131,7 +129,12 @@ function hidePanels() {
 
 function showError(message, code, details = {}) {
   errorMessage.textContent = message;
-  errorCode.textContent = code ? `Code: ${code}` : "";
+
+  // Code + optional LLM stage
+  const codeParts = [];
+  if (code) codeParts.push(`Code: ${code}`);
+  if (details.stage) codeParts.push(`Stage: ${details.stage}`);
+  errorCode.textContent = codeParts.join(" · ");
 
   const suggestions = details.suggestions || [];
   if (details.hint && !suggestions.length) {
@@ -145,6 +148,23 @@ function showError(message, code, details = {}) {
     }
   } else {
     errorSuggestions.classList.add("hidden");
+  }
+
+  // Request ID — shown in small text for support correlation
+  if (details.request_id) {
+    errorRequestId.textContent = `Request ID: ${details.request_id}`;
+    errorRequestId.classList.remove("hidden");
+  } else {
+    errorRequestId.classList.add("hidden");
+  }
+
+  // Highlight the retry button for transient errors; dim it for permanent ones
+  if (details.retryable) {
+    errorRetry.textContent = "Try again";
+    errorRetry.style.opacity = "1";
+  } else {
+    errorRetry.textContent = "Dismiss";
+    errorRetry.style.opacity = "0.6";
   }
 
   const fetchTrace = details.fetch || details.debug || null;
@@ -280,10 +300,8 @@ function buildPageContentPayload() {
     return { ...importedPageContent };
   }
   const pasteText = document.getElementById("paste-content").value.trim();
-  const pasteUrl = document.getElementById("paste-url").value.trim();
   if (!pasteText) return null;
   return {
-    url: pasteUrl || null,
     text: pasteText,
     source: "paste",
   };

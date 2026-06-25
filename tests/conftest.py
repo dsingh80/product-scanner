@@ -15,6 +15,7 @@ sys.path.insert(0, str(BACKEND))
 os.environ.setdefault("LLM_PROVIDER", "openai")
 os.environ.setdefault("OPENAI_API_KEY", "test-key")
 os.environ.setdefault("RATE_LIMIT_PER_MINUTE", "1000")
+os.environ.setdefault("RATE_LIMIT_PER_HOUR", "10000")
 
 
 @pytest.fixture

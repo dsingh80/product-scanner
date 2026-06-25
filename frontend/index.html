@@ -46,10 +46,6 @@
 
         <div id="panel-paste" class="mode-panel hidden">
           <div class="field">
-            <label for="paste-url">Page URL <span class="optional">(optional)</span></label>
-            <input type="url" id="paste-url" placeholder="https://www.ebay.com/itm/..." inputmode="url">
-          </div>
-          <div class="field">
             <label for="paste-content">Page text or HTML</label>
             <textarea id="paste-content" rows="6" placeholder="Paste product title, description, fitment, item specifics…"></textarea>
             <p class="field-hint">Copy from the product page in your browser (Ctrl+A on the listing, then paste here).</p>
@@ -108,6 +104,7 @@
           <p id="error-message"></p>
           <p id="error-code" class="error-code"></p>
           <ul id="error-suggestions" class="error-suggestions hidden"></ul>
+          <p id="error-request-id" class="error-request-id hidden"></p>
           <details id="error-debug" class="error-debug hidden">
             <summary>Raw fetch trace</summary>
             <pre id="error-debug-body"></pre>

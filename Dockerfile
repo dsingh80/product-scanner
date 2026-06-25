@@ -37,6 +37,8 @@ COPY frontend/ /app/frontend/
 COPY tests/ /app/tests/
 COPY pytest.ini /app/pytest.ini
 
+RUN mkdir -p /app/logs
+
 ENV PYTHONPATH=/app/backend
 
 EXPOSE 8000

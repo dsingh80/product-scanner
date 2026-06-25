@@ -9,6 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
 
 from app.services.llm.prompts import EXTRACT_SYSTEM, EXTRACT_USER
+from app.services.security.langchain_guard import make_input_guard
 
 
 def _parse_json(text: str) -> dict[str, Any]:
@@ -38,4 +39,5 @@ def build_extract_chain(llm):
         ("system", EXTRACT_SYSTEM),
         ("human", EXTRACT_USER),
     ])
-    return prompt | llm | StrOutputParser() | RunnableLambda(_parse_json)
+    guard = make_input_guard("content")
+    return guard | prompt | llm | StrOutputParser() | RunnableLambda(_parse_json)
